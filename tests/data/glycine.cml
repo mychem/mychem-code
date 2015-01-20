@@ -1,0 +1,15 @@
+<molecule id="glycine">
+ <atomArray>
+  <atom id="a1" elementType="C" x2="206.000000" y2="126.000000"/>
+  <atom id="a2" elementType="C" x2="227.007500" y2="113.871300"/>
+  <atom id="a3" elementType="O" x2="227.007500" y2="89.613900"/>
+  <atom id="a4" elementType="O" x2="248.015100" y2="126.000000"/>
+  <atom id="a5" elementType="N" x2="184.992500" y2="113.871300"/>
+ </atomArray>
+ <bondArray>
+  <bond atomRefs2="a1 a2" order="1"/>
+  <bond atomRefs2="a1 a5" order="1"/>
+  <bond atomRefs2="a2 a3" order="2"/>
+  <bond atomRefs2="a2 a4" order="1"/>
+ </bondArray>
+</molecule>
