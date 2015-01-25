@@ -1,0 +1,390 @@
+2014-09-12 Jerome Pansanel
+
+	* Release 0.9.2
+
+	* Fix a bug related to argument checking
+
+	* Add possibility to select database in unitary tests
+
+	* Fix argument testing for functions running with binary data
+
+2012-02-13 Jerome Pansanel
+
+	* Release 0.9.1
+
+	* Fix stereochemistry issue
+
+2011-12-09 Jerome Pansanel
+
+	* Release 0.9.0
+
+	* Update the documentation
+
+	* Fix a bug when loading Open Babel plugins
+
+	* Add support for Open Babel 2.3.0
+
+2011-04-04 Jerome Pansanel
+
+	* Release 0.8.2
+
+	* Fix a bug related to the fingerprint generation
+
+	* Fix a bug related to OBMol object serialization
+
+2010-09-07 Jerome Pansanel
+
+	* Release 0.8.1
+
+	* Fix URLs in Mychem documentation
+
+	* Fix an important bug in the serialized function
+
+	* Upgrade the test for molmatch functions
+
+2010-07-06 Jerome Pansanel
+
+	* Release 0.8.0
+
+2010-07-06 Jerome Pansanel
+
+	* Fix molmatch and property tests
+
+2010-07-06 Jerome Pansanel
+
+	* The documentation has been updated
+
+2010-06-29 Jerome Pansanel
+
+	* The mychemdb-manager.py script has been added
+
+2010-06-10 Jerome Pansanel
+
+	* MySQL 5.1 support added
+
+2009-11-24 Jerome Pansanel
+
+	* Build fix
+
+2009-09-30 Jerome Pansanel
+
+	* Release 0.7.0
+
+2009-09-29 Jerome Pansanel
+
+	* The documentation has been updated (new section about file formats)
+
+	* Compilation under Microsoft Windows XP has been successfully tested
+
+2009-09-15 Jerome Pansanel
+
+	* The Mychem software has been completly rewritten
+
+	* src/converion.c, src/conversion.h:
+          - mol2_to_molecule function added
+          - molecule_to_mol2 function added
+
+	* src/helper.c, src/helper.h, src/helper_wrapper.h,
+          src/helper_wrapper.cpp
+          - inchi_version function added
+
+	* Many bug fixes
+
+	* If a function fails, it returns NULL
+
+	* The Mychem3 documentation has been updated
+
+        * Mychem2 is no longer supported
+
+2009-06-03 Jerome Pansanel
+
+	* src/conversion/conversion.c, src/conversion/conversion.h:
+	  - pdb_to_molecule function added
+
+2009-06-02 Jerome Pansanel
+
+	* src/serialization.cpp, src/include/serialization.h:
+	  - Serialization of OBMol object added
+
+	* src/conversion/conversion.c, src/conversion/conversion.h:
+	  - molecule_to_serializedOBMol function added
+
+	* src/molmatch/molmatch_wrapper.cpp:
+	  - structure_match is now using serializad OBMol object
+
+2008-12-30 Jerome Pansanel
+
+	* src/dlhandler_unix.cpp:
+	  - Fix the dlhandler for Mac OS X
+
+	* Documentation updated
+
+	* Release 0.6.0
+
+2008-12-10 Jerome Pansanel
+
+	* Documentation updated
+
+2008-12-05 Jerome Pansanel
+
+	* Test code updated (switch from C to C++)
+
+2008-12-02 Jerome Pansanel
+
+	* Fix many code lines for an easy Win32 compilation
+
+2008-11-21 Jerome Pansanel
+
+	* src/molmatch/molmatch.c:
+	  - bit_fp_or function added
+	  - bit_fp_count function added
+
+2008-11-20 Jerome Pansanel
+
+	* src/molmatch/molmatch.c:
+	  - bit_fp_and function added
+
+2008-11-19 Jerome Pansanel
+
+	* Default molecule type is now MOL
+
+	* Mychem3 is fully working.
+
+	* The Mychem3 documentation has been updated
+
+	* Several bug fixes
+
+2008-11-12 Jerome Pansanel
+
+	* Default molecule type is now CML
+
+	* src/conversion/conversion.c, src/conversion/conversion.h:
+	  - molecule_to_inchi function added
+          - inchi_to_molecule function added
+
+2008-11-11 Jerome Pansanel
+
+	* CMakeLists.txt:
+          - The file has been updated to better handle the compiler flags
+
+	* cmake/modules/MacroEnsureVersion.cmake:
+	  - new file
+
+2008-11-10 Jerome Pansanel
+
+        * Add wrapper for the helper module (fix the include of babelconfig.h)
+
+        * conversion, modification, molmatch and property modules:
+          - fix an important issue with the arguments given by MySQL
+
+2008-06-19 Jerome Pansanel
+
+	* Release 0.5.9
+
+	* Bug fixes
+
+2008-06-18 Jerome Pansanel
+
+	* src/conversion/conversion.c, src/conversion/conservion.h:
+          - fingerprint3 function added
+	  - fingerprint4 function added
+
+	* doc/mychem/installation.xml:
+	  - Description of the windows installation added
+	  - Code formatting fixed
+
+2008-06-16 Jerome Pansanel
+
+	* Windows version of Mychem is working
+
+2008-06-10 Jerome Pansanel
+
+	* src/molmatch/molmatch.c, src/molmatch/molmatch.h,
+	  src/molmatch/molmatch_wrapper.cpp,
+	  src/molmatch/molmatch_wrapper.h,
+	  src/molmatch/molmatch.sql:
+	  - substruct_atom_ids function added
+
+2008-04-08 Jerome Pansanel
+
+	* Release 0.5.5
+
+	* Fix some spelling in the documentation
+
+2008-04-04 Jerome Pansanel
+
+	* src/modification/modification.c, src/modification/modification.h,
+	  src/modification/modification_wrapper.cpp,
+	  src/modification/modification_wrapper.h,
+	  src/modification/modification.sql
+	  - strip_salts function added
+
+	* src/conversion/conversion.c, src/property/conversion.h,
+	  src/conversion/conversion_wrapper.cpp,
+	  src/conversion/conversion_wrapper.h,
+	  src/conversion/conversion.sql
+	  - molecule_to_canonical_smiles function added
+
+	* doc/mychem/command-reference.xml
+	  - Add documentation for the new functions
+	  - Update documentation for some functions
+
+2008-03-29 Jerome Pansanel
+
+	* src/property/property.c, src/property/property.h,
+	  src/property/property_wrapper.cpp, src/property/property_wrapper.h
+	  - is_2D function added
+	  - is_3D function added
+	  - is_chiral function added
+	  - number_of_rings function added
+
+2008-03-28 Jerome Pansanel
+
+	* src/property/property.c, src/property/property.h,
+	  src/property/property_wrapper.cpp, src/property/property_wrapper.h
+	  - number_of_acceptors function added
+	  - number_of_donors function added
+	  - molpsa function added
+	  - molmr function added
+	  - mollogp function added
+
+	* Updating doc/mychem/command-reference.xml
+
+2008-03-19 Jerome Pansanel
+
+	* Release 0.5.2
+
+	* Updating doc and ChangeLog
+
+2008-03-18 Jerome Pansanel
+
+	* src/conversion/conversion.c, src/helper/helper.c,
+	  src/modification/modification.c, src/property/property.c
+	  - Fixing important bug; thanks to Bjoern Gruening !
+
+2008-03-07 Jerome Pansanel
+
+	* src/molmatch, doc/mychem/command-reference.xml
+	  - Move match to match_substruct
+	  - Add substruct_count
+
+2008-03-05 Jerome Pansanel
+
+	* Release 0.5.1
+
+	* src/molmatch/, doc/mychem/command-reference.xml
+	  - The FIND_SIMILAR() function has been removed
+
+	* src/{module}/
+	  - Split .c files in .c and .h
+	  - Fix some spelling for _wrapper.cpp
+	  - Add const and __attribute__((unused)) to some function definitions
+	    (no warning left when compiling)
+
+2008-02-29 Jerome Pansanel
+
+	* Release 0.5.0
+
+	* tests:
+	  conversion_test.c tests molfile_to_molecule(), molecule_to_molfile(),
+	  V3000_to_molecule(), molecule_to_V3000(), smiles_to_molecule(),
+	  molecule_to_smiles(), cml_to_molecule(), molecule_to_cml(),
+	  fingerprint()
+
+	* src/conversion:
+	  - conversion_wrapper.cpp has been modified to replace '\n' by '\0'
+
+2008-02-27 Jerome Pansanel
+
+	* tests:
+	  property_test.c tests molweight(), exactmass(), number_of_atoms(),
+	  number_of_heavy_atoms(), number_of_bonds(), number_of_rotable_bonds(),
+	  molformula()
+          test_functions.{h,c} contains two functions useful for all modules.
+
+2008-02-25 Jerome Pansanel
+
+	* tests:
+	  - CMakeLists.txt is working
+	  - helper_test tests mychem_version() and openbabel_version()
+
+	* doc/mychem:
+          - installation.xml has been updated to introduce the test process
+
+2008-02-19 Jerome Pansanel
+
+	* tests:
+	  - Creation of the directory. The CMakeLists.txt, conversion_test.c,
+	    helper_test.c, modification.c, molmatch.c and property_test.c files
+	    have been added.
+
+2008-02-18 Jerome Pansanel
+
+	* Release 0.4.5
+
+	* src:
+	  - New directories (conversion, helper, modification, molmatch and
+	    property) containing each a main module
+
+	* src:
+	  - New directory 'include'. It contains mychem/mychem_config.h.
+
+	* doc:
+	  - The documentation has been updated with a new troubleshooting
+	    appendix and the description of 5 new functions for the property
+	    module.
+
+	* src/conversion:
+	  - Some bug fixes
+
+	* src/property:
+	  - Five functions have been added (number_of_atoms,
+	    number_of_heavy_atoms, number_of_bonds, number_of_rotable_bonds and
+	    total_charge).
+
+2007-10-17 Jerome Pansanel
+
+	* src/conversion.c, src/conversion_wrapper.h,
+	  - src/conversion_wrapper.cpp:
+	  - Extending conversion functions
+
+	* src/modification.c, src/modification_wrapper.h,
+	  - src/modifcation_wrapper.cpp:
+	  - Adding modification functions
+
+	* src/helper.c:
+	  - Common helper functions
+
+	* doc/mychem:
+	  - Update the documentation
+
+	* script/mychemadmin:
+	  - Fix some bugs
+	  - Adding distutils script for the installation
+
+	* Doxyfile:
+	  - Update API documentation and generation options
+
+	* Release 0.4
+
+2007-08-17 Jerome Pansanel
+
+	* src/conversion.c, src/conversion_wrapper.h,
+	  - src/conversion_wrapper.cpp:
+	  - Basic conversion functions are working
+
+	* src/property.c, src/property_wrapper.h, src/property_wrapper.cpp:
+	  - Basic property functions are working
+
+	* script/mychemadmin:
+	  - MychemAdmin, a GUI for database loading is available
+
+	* Release 0.2
+
+2007-06-28 Jerome Pansanel
+
+	* Project initialization
+
+	* first API draft
+
+	* Release 0.1
