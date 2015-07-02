@@ -48,24 +48,6 @@ my_bool match_substruct_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
     return 1;
   }
 
-  if (args->args[0] == NULL) {
-    strcpy(message,"The first argument is null");
-
-    return 1;
-  }
-
-  if (args->args[1] == NULL) {
-    strcpy(message,"The second argument is null");
-
-    return 1;
-  }
-
-  if (args->lengths[1] < sizeof(unsigned int)) {
-    strcpy(message,"The second argument is invalid");
-
-    return 1;
-  }
-
   initid->maybe_null = 1;
 
   return 0;
@@ -77,6 +59,19 @@ void match_substruct_deinit(UDF_INIT *initid __attribute__((unused)))
 
 longlong match_substruct(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
+    if ((args->args[0] == NULL) || (args->args[1] == NULL)) {
+      /* Arguments can not be NULL */
+      /* Chose to not set *error=1 to continue with other rows */
+      *is_null = 1;
+      return 0;
+    }
+
+    if (args->lengths[1] < sizeof(unsigned int)) {
+      /* Chose to not set *error=1 to continue with other rows */
+      *is_null = 1;
+      return 0;
+    }
+
   /* Fix a MySQL end string char issue */
   char *queryMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
   unsigned int *intptr = (unsigned int *) args->args[1];
@@ -298,7 +293,7 @@ longlong substruct_count(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *arg
 {
   /* Fix a MySQL end string char issue */
   char *queryMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  unsigned int *intptr = (unsigned int *) args->args[1]; 
+  unsigned int *intptr = (unsigned int *) args->args[1];
   unsigned int totalsize = intptr[0];
   longlong number_of_substructure = 0;
 
@@ -325,7 +320,7 @@ longlong substruct_count(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *arg
   *error = 0;
 
   number_of_substructure = substructure_count(queryMol, args->args[1]);
-  
+
   free(queryMol);
 
   return number_of_substructure;
@@ -406,7 +401,7 @@ char *bit_fp_and(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *
   ++ulintptr2;
   intptr2 = (int *) ulintptr2;
   ++ulintptr3;
-  intptr3 = (int *) ulintptr3;  
+  intptr3 = (int *) ulintptr3;
 
   for(i = 0; i < fpLength1; ++i) {
     andInt = *intptr1 & *intptr2;
@@ -496,7 +491,7 @@ char *bit_fp_or(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *l
   ++ulintptr2;
   intptr2 = (int *) ulintptr2;
   ++ulintptr3;
-  intptr3 = (int *) ulintptr3;  
+  intptr3 = (int *) ulintptr3;
 
   for(i = 0; i < fpLength1; ++i) {
     orInt = *intptr1 | *intptr2;
@@ -576,4 +571,3 @@ longlong bit_fp_count(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, 
 }
 
 #endif /* HAVE_DLOPEN */
-
