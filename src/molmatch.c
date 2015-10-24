@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009-2014 by CNRS                                       *
+ *   Copyright (C) 2009-2015 by CNRS                                       *
  *   jerome.pansanel@iphc.cnrs.fr -- Project founder and lead developer    *
  *   aureliedeluca@gmail.com -- Developer                                  *
  *                                                                         *
@@ -59,18 +59,18 @@ void match_substruct_deinit(UDF_INIT *initid __attribute__((unused)))
 
 longlong match_substruct(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
-    if ((args->args[0] == NULL) || (args->args[1] == NULL)) {
-      /* Arguments can not be NULL */
-      /* Chose to not set *error=1 to continue with other rows */
-      *is_null = 1;
-      return 0;
-    }
+  if ((args->args[0] == NULL) || (args->args[1] == NULL)) {
+    /* Arguments can not be NULL */
+    /* Chose to not set *error=1 to continue with other rows */
+    *is_null = 1;
+    return 0;
+  }
 
-    if (args->lengths[1] < sizeof(unsigned int)) {
-      /* Chose to not set *error=1 to continue with other rows */
-      *is_null = 1;
-      return 0;
-    }
+  if (args->lengths[1] < sizeof(unsigned int)) {
+    /* Chose to not set *error=1 to continue with other rows */
+    *is_null = 1;
+    return 0;
+  }
 
   /* Fix a MySQL end string char issue */
   char *queryMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
