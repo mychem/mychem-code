@@ -22,4 +22,4 @@ Mychem is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation version 2 of the License, or
 (at your option) any later version. Full details
-can be found in the file [COPYING](COPYING)
+can be found in the [COPYING](COPYING) file.
