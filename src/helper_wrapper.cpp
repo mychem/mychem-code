@@ -58,6 +58,15 @@ char *getInChIVersion()
   else if (!strncmp(BABEL_VERSION, "2.2.3", 5)) {
     version = "1.02";
   }
+  else if (!strncmp(BABEL_VERSION, "2.3.0", 5)) {
+    version = "1.03";
+  }
+  else if (!strncmp(BABEL_VERSION, "2.3.1", 5)) {
+    version = "1.03";
+  }
+  else if (!strncmp(BABEL_VERSION, "2.3.2", 5)) {
+    version = "1.04";
+  }
   else {
     version = "unknown";
   }
