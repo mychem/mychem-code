@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009-2011 by CNRS                                       *
+ *   Copyright (C) 2009-2015 by CNRS                                       *
  *   jerome.pansanel@iphc.cnrs.fr -- Project founder and lead developer    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,7 +21,7 @@
 /**
  * This file is part of the Mychem software. It contains function declarations
  * used by Mychem and related to dynamic library management.
- * @file lib_handler.h
+ * @file dlhandler.h
  * @short Dynamic library management.
  * @author Jerome Pansanel <jerome.pansanel@iphc.cnrs.fr>
  */
