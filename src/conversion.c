@@ -158,7 +158,7 @@ char *molecule_to_molfile(UDF_INIT *initid, UDF_ARGS *args, char *result, unsign
 
   strncpy(inputMol, args->args[0], args->lengths[0]);
   inputMol[args->lengths[0]] = 0;
-  
+
   memset(initid->ptr, 0, sizeof(char)*initid->max_length);
   *result = 0;
   *is_null = 0;
@@ -452,13 +452,87 @@ char *molecule_to_smiles(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigne
 
   strncpy(inputMol, args->args[0], args->lengths[0]);
   inputMol[args->lengths[0]] = 0;
-  
+
   memset(initid->ptr, 0, sizeof(char)*initid->max_length);
   *result = 0;
   *is_null = 0;
   *error = 0;
 
   outputMol = conversion(inputMol, inputFormat, outputFormat);
+
+  /* Return NULL if the outputMol is empty */
+  if (outputMol == NULL) {
+    *is_null = 1;
+    *error = 1;
+    free(inputMol);
+
+    return NULL;
+  }
+
+  *length = strlen(outputMol);
+  strncat(initid->ptr, outputMol, *length);
+
+  free(inputMol);
+  free(outputMol);
+
+  return initid->ptr;
+}
+
+my_bool molecule_to_query_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+{
+  if (args->arg_count != 1) {
+    strcpy(message, "Wrong number of arguments: MOLECULE_TO_QUERY() requires one argument");
+    return 1;
+  }
+  if (args->arg_type[0] != STRING_RESULT) {
+    strcpy(message,"Wrong argument type: MOLECULE_TO_QUERY() requires a STRING");
+    return 1;
+  }
+
+  initid->maybe_null = 1;
+  initid->max_length = MAX_VALUE_LENGTH;
+
+  if (!(initid->ptr = (char*) malloc(sizeof(char)*initid->max_length))) {
+    strcpy(message, "Couldn't allocate memory");
+    return 1;
+  }
+
+  return 0;
+}
+
+void molecule_to_query_deinit(UDF_INIT *initid)
+{
+  if (initid->ptr) {
+    free(initid->ptr);
+  }
+}
+
+char *molecule_to_query(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error)
+{
+  /* Fix a MySQL end string char issue */
+  char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
+  char *outputMol = NULL;
+
+  if (args->args[0] == NULL) {
+    /* Arguments can not be NULL */
+    *is_null = 1;
+    *error = 1;
+    free(inputMol);
+
+    return NULL;
+  }
+
+  const char *inputFormat = MOLECULE_TYPE;
+
+  strncpy(inputMol, args->args[0], args->lengths[0]);
+  inputMol[args->lengths[0]] = 0;
+
+  memset(initid->ptr, 0, sizeof(char)*initid->max_length);
+  *result = 0;
+  *is_null = 0;
+  *error = 0;
+
+  outputMol = conversionSMA(inputMol, inputFormat);
 
   /* Return NULL if the outputMol is empty */
   if (outputMol == NULL) {
@@ -599,7 +673,7 @@ char *cml_to_molecule(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned l
 
   strncpy(inputMol, args->args[0], args->lengths[0]);
   inputMol[args->lengths[0]] = 0;
- 
+
   memset(initid->ptr, 0, sizeof(char)*initid->max_length);
   *result = 0;
   *is_null = 0;
@@ -774,7 +848,7 @@ char *fingerprint(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long 
   *length = intptr[0] + sizeof(unsigned long int);
   memcpy(initid->ptr, serializedOutput, *length);
 
-  free(inputMol);  
+  free(inputMol);
   free(fpType);
   free(serializedOutput);
 
@@ -849,9 +923,9 @@ char *fingerprint2(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long
   *length = intptr[0] + sizeof(unsigned long int);
   memcpy(initid->ptr, serializedOutput, *length);
 
-  free(inputMol);  
+  free(inputMol);
   free(serializedOutput);
-  
+
   return initid->ptr;
 }
 
@@ -923,9 +997,9 @@ char *fingerprint3(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long
   *length = intptr[0] + sizeof(unsigned long int);
   memcpy(initid->ptr, serializedOutput, *length);
 
-  free(inputMol);  
+  free(inputMol);
   free(serializedOutput);
-  
+
   return initid->ptr;
 }
 
@@ -999,7 +1073,7 @@ char *fingerprint4(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long
 
   free(inputMol);
   free(serializedOutput);
-  
+
   return initid->ptr;
 }
 
@@ -1049,7 +1123,7 @@ char *molecule_to_canonical_smiles(UDF_INIT *initid, UDF_ARGS *args, char *resul
 
   strncpy(inputMol, args->args[0], args->lengths[0]);
   inputMol[args->lengths[0]] = 0;
-  
+
   memset(initid->ptr, 0, sizeof(char)*initid->max_length);
   *result = 0;
   *is_null = 0;
@@ -1198,7 +1272,7 @@ char *molecule_to_inchi(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned
 
   strncpy(inputMol, args->args[0], args->lengths[0]);
   inputMol[args->lengths[0]] = 0;
-  
+
   memset(initid->ptr, 0, sizeof(char)*initid->max_length);
   *result = 0;
   *is_null = 0;
@@ -1292,7 +1366,7 @@ char *molecule_to_serializedOBMol(UDF_INIT *initid, UDF_ARGS *args, char *result
 
   free(inputMol);
   free(serializedOBMol);
-  
+
   return initid->ptr;
 }
 
@@ -1496,13 +1570,13 @@ char *molecule_to_mol2(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
 
   strncpy(inputMol, args->args[0], args->lengths[0]);
   inputMol[args->lengths[0]] = 0;
-  
+
   memset(initid->ptr, 0, sizeof(char)*initid->max_length);
   *result = 0;
   *is_null = 0;
   *error = 0;
 
-  outputMol = conversion(inputMol, inputFormat, outputFormat); 
+  outputMol = conversion(inputMol, inputFormat, outputFormat);
 
   /* Return NULL if the outputMol is empty */
   if (outputMol == NULL) {
@@ -1523,4 +1597,3 @@ char *molecule_to_mol2(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
 }
 
 #endif /* HAVE_DLOPEN */
-
