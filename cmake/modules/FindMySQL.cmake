@@ -3,7 +3,7 @@
 ##############################################################################
 #
 # Usage of this module as follows:
-# 
+#
 #   find_package( MySQL )
 #   if(MySQL_FOUND)
 #     include_directories(${MySQL_INCLUDE_DIRS})
@@ -12,7 +12,7 @@
 #
 #
 ##############################################################################
-# 
+#
 # Variables used by this module, they can change the default behaviour and
 # need to set before calling find_package:
 #
@@ -28,7 +28,7 @@
 #                                was found as well as the library.
 #  MySQL_INCLUDE_DIR             MySQL include directory.
 #  MySQL_LIBRARIES               Link to this to use the MySQL library.
-#  MySQL_MAJOR_VERSION           Major version number of MySQL.                   
+#  MySQL_MAJOR_VERSION           Major version number of MySQL.
 #  MySQL_MINOR_VERSION           Minor version number of MySQL.
 #  MySQL_PLUGIN_DIR              Plugin directory.
 #  MySQL_VERSION                 The version numer of MySQL.
@@ -55,7 +55,7 @@ if(UNIX)
                  /usr/bin/
     )
 
-    if(MYSQL_CONFIG) 
+    if(MYSQL_CONFIG)
         message(STATUS "Using mysql-config: ${MYSQL_CONFIG}")
 
         # set INCLUDE_DIR
@@ -107,12 +107,12 @@ ENDIF(UNIX)
 
 find_path(MySQL_INCLUDE_DIR mysql.h
           /usr/local/include
-          /usr/local/include/mysql 
+          /usr/local/include/mysql
           /usr/local/mysql/include
           /usr/local/mysql/include/mysql
           /opt/mysql/mysql/include
           /opt/mysql/mysql/include/mysql
-          /usr/include 
+          /usr/include
           /usr/include/mysql
           ${MYSQL_INCLUDEDIR}
 )
@@ -159,14 +159,20 @@ set(MYSQL_DIRECTORIES
 message(STATUS "MySQL Version: ${MySQL_VERSION}")
 
 set ( ${MySQL_PLUGIN_DIR} "")
-if (${MySQL_VERSION} MATCHES "^5\\.[15]|^6\\.")
-  foreach (MYSQL_DIR ${MYSQL_DIRECTORIES})
-    if (IS_DIRECTORY "${MYSQL_DIR}/plugin")
-      set (MySQL_PLUGIN_DIR "${MYSQL_DIR}/plugin")
-    endif (IS_DIRECTORY "${MYSQL_DIR}/plugin")
-  endforeach (MYSQL_DIR MYSQL_DIRECTORIES)
-endif (${MySQL_VERSION} MATCHES "^5\\.[15]|^6\\.")
-
+exec_program(${MYSQL_CONFIG}
+     ARGS --plugindir
+     OUTPUT_VARIABLE MY_PLUGIN_TEMP)
+if (MY_PLUGIN_TEMP)
+    set ( MySQL_PLUGIN_DIR ${MY_PLUGIN_TEMP})
+else (MY_PLUGIN_TEMP)
+    if (${MySQL_VERSION} MATCHES "^5\\.[15]|^6\\.")
+      foreach (MYSQL_DIR ${MYSQL_DIRECTORIES})
+        if (IS_DIRECTORY "${MYSQL_DIR}/plugin")
+          set (MySQL_PLUGIN_DIR "${MYSQL_DIR}/plugin")
+        endif (IS_DIRECTORY "${MYSQL_DIR}/plugin")
+      endforeach (MYSQL_DIR MYSQL_DIRECTORIES)
+    endif (${MySQL_VERSION} MATCHES "^5\\.[15]|^6\\.")
+endif (MY_PLUGIN_TEMP)
 message(STATUS "MySQL Plugin Dir: ${MySQL_PLUGIN_DIR}")
 if(MySQL_INCLUDE_DIR AND MySQL_LIBRARIES)
     set(MySQL_FOUND TRUE CACHE INTERNAL "MySQL found")
