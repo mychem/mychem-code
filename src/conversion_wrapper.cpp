@@ -43,7 +43,7 @@
 #include <sstream>
 
 using namespace std;
-using namespace OpenBabel; 
+using namespace OpenBabel;
 
 #if defined(__CYGWIN__) || defined(__MINGW32__)
   // macro to implement static OBPlugin::PluginMapType& Map()
@@ -93,6 +93,50 @@ char *conversion(const char *molecule, const char *inType, const char *outType)
   return retVal;
 }
 
+char *conversionSMA(const char *molecule, const char *inType)
+{
+  string instring(molecule);
+  string outstring;
+  istringstream inStream(instring);
+  ostringstream outStream;
+
+  char *retVal = NULL;
+
+  LibHandler ob_lib;
+
+  if (!ob_lib.isLoaded()) {
+    return retVal;
+  }
+
+  OBConversion conv(&inStream,&outStream);
+
+  if (conv.SetInAndOutFormats(inType, "SMI")) {
+    // Set options
+    /* No molecule name */
+    conv.AddOption("n", OBConversion::OUTOPTIONS);
+    /* Add option which avoids implicit H being added to the SMARTS.
+       The parameter must be present but can be anything.
+       Taken from opisomorph.cpp  */
+    conv.AddOption("h",OBConversion::OUTOPTIONS, "X");
+
+    try {
+      conv.Convert();
+
+      outstring = outStream.str();
+
+      if (outstring[outstring.length()-1] == '\n') {
+        outstring = outstring.substr(0, outstring.length()-1);
+      }
+
+      retVal = strdup(outstring.c_str());
+    }
+    catch(...) {
+    }
+  }
+
+  return retVal;
+}
+
 char *conversionV3000(const char *V3000)
 {
   string instring(V3000);
@@ -112,7 +156,7 @@ char *conversionV3000(const char *V3000)
 
   if (conv.SetInAndOutFormats(MOLECULE_TYPE, "MOL")) {
     // Set options
-    conv.AddOption("3", OBConversion::OUTOPTIONS); 
+    conv.AddOption("3", OBConversion::OUTOPTIONS);
 
     conv.Convert();
 
@@ -155,10 +199,10 @@ char *V3000conversion(const char *molecule)
 
   if (conv.SetInAndOutFormats("MOL", MOLECULE_TYPE)) {
     // Set options
-    conv.AddOption("3", OBConversion::INOPTIONS); 
+    conv.AddOption("3", OBConversion::INOPTIONS);
 
     conv.Convert();
-  
+
     outstring = outStream.str();
 
     if (outstring[outstring.length()-1] == '\n') {
@@ -337,4 +381,3 @@ char *serializeMolecule(const char *molecule) {
 
   return serializeOBMol(mol);
 }
-

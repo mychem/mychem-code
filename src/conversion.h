@@ -216,6 +216,33 @@ void molecule_to_smiles_deinit(UDF_INIT *initid);
 char *molecule_to_smiles(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error);
 
 /**
+ * @short Initializes the molecule_to_query function.
+ * @param initid A structure that the init function should fill
+ * @param args A structure which contains arguments and related variables
+ * @param message The error message that should be passed to the user on fail
+ * @return True if an error is raised during the initialization
+ */
+my_bool molecule_to_query_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+
+/**
+ * @short Should free all resources allocated by molecule_to_query_init().
+ * @param initid The structure filled by molecule_to_query_init()
+ */
+void molecule_to_query_deinit(UDF_INIT *initid);
+
+/**
+ * @short Converts a molecule in MOLECULE_TYPE format to a query molecule in SMARTS.
+ * @param initid A structure filled by molecule_to_query_init()
+ * @param args A structure which contains arguments and related variables
+ * @param result A buffer to save result
+ * @param length A pointer to length of the above buffer
+ * @param is_null Set to 1 if the result is null
+ * @param error Set to 1 if something goes fatally wrong
+ * @return The converted molecule
+ */
+char *molecule_to_query(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error);
+
+/**
  * @short Initializes the molecule_to_molecule function.
  * @param initid A structure that the init function should fill
  * @param args A structure which contains arguments and related variables
@@ -595,4 +622,3 @@ char *molecule_to_mol2(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
 #endif /* HAVE_DLOPEN */
 
 #endif /* __CONVERSION_H */
-

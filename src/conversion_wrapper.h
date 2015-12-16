@@ -48,6 +48,14 @@ extern "C"
   char *conversion(const char *molecule, const char *in_type, const char *out_type);
 
   /**
+   * @short Converts a file format to a smartslike SMILES.
+   * @param molecule The molecule to convert.
+   * @param in_type Input format.
+   * @return converted molecule
+  */
+  char *conversionSMA(const char *molecule, const char *inType);
+
+  /**
    * @short Converts a V3000 molecule to the default molecule type.
    * @param V3000 The V3000 molecule to convert.
    * @return converted molecule.
@@ -102,4 +110,3 @@ extern "C"
 #endif /* __cplusplus */
 
 #endif /* __CONVERSION_WRAPPER_H */
- 

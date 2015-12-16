@@ -24,6 +24,9 @@ CREATE FUNCTION smiles_to_molecule RETURNS STRING SONAME "mychem.dll";
 DROP FUNCTION IF EXISTS molecule_to_smiles;
 CREATE FUNCTION molecule_to_smiles RETURNS STRING SONAME "mychem.dll";
 
+DROP FUNCTION IF EXISTS molecule_to_query;
+CREATE FUNCTION molecule_to_query RETURNS STRING SONAME "mychem.dll";
+
 DROP FUNCTION IF EXISTS molecule_to_molecule;
 CREATE FUNCTION molecule_to_molecule RETURNS STRING SONAME "mychem.dll";
 
@@ -167,4 +170,3 @@ CREATE FUNCTION is_chiral RETURNS INTEGER SONAME "mychem.dll";
 
 DROP FUNCTION IF EXISTS number_of_rings;
 CREATE FUNCTION number_of_rings RETURNS INTEGER SONAME "mychem.dll";
-
