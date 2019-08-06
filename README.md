@@ -1,4 +1,4 @@
-# Mychem v0.9.3
+# Mychem
 
 Mychem is a chemoinformatics extension for MySQL. This extension provides a set of functions that handles chemical
 data within the MySQL database. Mychem is based on [Open Babel](http://openbabel.org/wiki/Main_Page) (version >= 2.3.0). As Open Babel is a well-known software in chemoinformatics, Mychem proposes reliable and fast functions. These functions permit you to search, analyze and convert chemical data.

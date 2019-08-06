@@ -1,6 +1,6 @@
 LIBRARY mychem
 
-VERSION 0.8.1
+VERSION 0.9.4
 
 EXPORTS
   molfile_to_molecule_init

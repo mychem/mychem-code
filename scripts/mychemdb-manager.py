@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-# Copyright (c) 2010 CNRS
+# Copyright (c) 2010-2017 CNRS
 # Author: Jerome Pansanel <jerome.pansanel@iphc.cnrs.fr>
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright
@@ -14,11 +14,11 @@
 #     * Neither the name of the CNRS nor the
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
 # DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -33,11 +33,13 @@ import MySQLdb
 from optparse import OptionParser
 
 
-#-----------------------------------------------------------------------------
-# Functions
-#-----------------------------------------------------------------------------
-
 def logger(message, logfile=None, mode=0):
+    '''Helper function for managing log message.
+
+    :param message: the log message
+    :param logfile: the logfile to write the message to (optional)
+    :param mode: the log level (optional)
+    '''
     if mode == 2:
         if logfile:
             logfile.write(message)
@@ -53,25 +55,88 @@ def logger(message, logfile=None, mode=0):
             sys.stdout.write(message)
 
 
-#-----------------------------------------------------------------------------
-# Options
-#-----------------------------------------------------------------------------
+def load_structure(name, molfile):
+    '''This function load a structure in the database. If the name of
+    the molecule already exists in the database, the content of the
+    field is updated. Otherwise, the structure is simply added to
+    the database.
+
+    :param name: the name of the molecule
+    :param molfile: the structure
+    '''
+    if options.update:
+        query = """SELECT `id` FROM `%s` WHERE name='%s'
+                """ % (compoundTable, link.escape_string(name))
+        result_len = cursor.execute(query)
+
+        if result_len > 0:
+            result = cursor.fetchone()
+            compound_id = result[0]
+
+            query = """UPDATE `%s`,`%s` SET `modified`=CURRENT_TIMESTAMP(),
+                       `molfile`='%s' WHERE `id`=%i AND `compound_id`=`id`;
+                    """ % (compoundTable, structure3DTable,
+                           link.escape_string(molfile), compound_id)
+            cursor.execute(query)
+
+            query = """UPDATE `%s`,`%s` SET
+                       `inchi`=MOLECULE_TO_INCHI(`molfile`),
+                       `smiles`=MOLECULE_TO_SMILES(`molfile`)
+                       WHERE `%s`.`compound_id`=%i
+                       AND `%s`.`compound_id`=%i
+                    """ % (structure1DTable, structure3DTable,
+                           structure1DTable, compound_id,
+                           structure3DTable, compound_id)
+            cursor.execute(query)
+
+            query = """UPDATE `%s`,`%s` SET `fp2`=FINGERPRINT2(`molfile`),
+                       `obserialized`=MOLECULE_TO_SERIALIZEDOBMOL(`molfile`)
+                       WHERE `%s`.`compound_id`=%i AND `%s`.`compound_id`=%i
+                    """ % (structureBinTable, structure3DTable,
+                           structureBinTable, compound_id, structure3DTable,
+                           compound_id)
+            cursor.execute(query)
+
+            return True
+
+    query = """INSERT INTO `%s` (`name`,`created`,`modified`)
+               VALUES ('%s',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP())
+            """ % (compoundTable, link.escape_string(name))
+    cursor.execute(query)
+    compound_id = cursor.lastrowid
+    query = """INSERT INTO `%s` (`compound_id`, `molfile`) VALUES (%i, '%s');
+            """ % (structure3DTable, compound_id, link.escape_string(molfile))
+    cursor.execute(query)
+    query = """INSERT INTO `%s` (`compound_id`, `inchi`, `smiles`)
+               SELECT `compound_id`, MOLECULE_TO_INCHI(`molfile`),
+               MOLECULE_TO_SMILES(`molfile`) FROM `%s` WHERE `compound_id`=%i;
+            """ % (structure1DTable, structure3DTable, compound_id)
+    cursor.execute(query)
+    query = """INSERT INTO `%s` (`compound_id`, `fp2`, `obserialized`)
+               SELECT `compound_id`, FINGERPRINT2(`molfile`),
+               MOLECULE_TO_SERIALIZEDOBMOL(`molfile`) FROM `%s`
+               WHERE `compound_id`=%i;
+            """ % (structureBinTable, structure3DTable, compound_id)
+    cursor.execute(query)
+    return True
 
 usage = "Usage: %prog [options] FILE"
 
-version = "%prog 0.8"
+version = "%prog 1.0"
 
 description = "%prog load a file in MDL SDF format into a MySQL database" \
             + " and creates a chemical cartridge with Mychem."
 
-parser = OptionParser(usage=usage, version=version, description=description )
+parser = OptionParser(usage=usage, version=version, description=description)
 
 parser.add_option("-H", action="store", type="string", dest="host",
-                  help="connect to host [default: %default]", default="localhost")
+                  help="connect to host [default: %default]",
+                  default="localhost")
 parser.add_option("-U", action="store", type="string", dest="user",
-                  help="user for login to MySQL [default: %default]", default="mychem")
+                  help="user for login to MySQL [default: %default]",
+                  default="mychem")
 parser.add_option("-P", action="store_true", dest="pwd",
-                  help="use a password to connect to MySQL (it will be asked from the tty)",
+                  help="use a password to connect to MySQL",
                   default=False)
 parser.add_option("-D", action="store", type="string", dest="db",
                   help="database to use [default: %default]", default="mychem")
@@ -93,17 +158,11 @@ parser.add_option("-u", action="store_true", dest="update",
 parser.add_option("-v", action="store_true", dest="verbose",
                   help="verbose mode", default=False)
 
-# Ajouter une option Filename
 (options, args) = parser.parse_args()
 
 if len(args) != 1:
     sys.stdout.write(parser.format_help())
     sys.exit(0)
-
-
-#-----------------------------------------------------------------------------
-# Logfile
-#-----------------------------------------------------------------------------
 
 verbose = options.verbose
 if options.logfile:
@@ -113,31 +172,22 @@ if options.logfile:
     try:
         logFile = open(options.logfile, 'w')
     except IOError, e:
-        sys.stderr.write("Error: Could not open log file '%s': " % options.logfile)
-        sys.stderr.write("%s\n" % (e.args[1]))
+        message = """Error: Could not open log file '%s':
+                     %s
+                  """ % (options.logfile, e.args[1])
+        sys.stderr.write(message)
         sys.exit(1)
 else:
     logFile = None
 
 
-#-----------------------------------------------------------------------------
-# Check incompatible options
-#-----------------------------------------------------------------------------
-
 if options.append + options.replace + options.update > 1:
-    message = "Error: Options [a]ppend, [r]eplace and [u]pdate can not be set" \
-            + "simultanously\n"
+    message = "Error: Options [a]ppend, [r]eplace and [u]pdate " \
+            + "can not be simultanously\n"
     logger(message, logFile, 2)
     logFile.close()
     sys.exit(1)
 
-
-#-----------------------------------------------------------------------------
-# Database connexion
-# Connect to the database and verify the table structures. If the user asked
-# to create new tables, old one will be removed. Else, they will be updated.
-# the tables does not exist, the script create new
-#-----------------------------------------------------------------------------
 
 host = options.host
 user = options.user
@@ -148,7 +198,7 @@ else:
     passwd = ""
 
 try:
-    link = MySQLdb.connect(host = host, user = user, passwd = passwd, db = db)
+    link = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
 except MySQLdb.Error, e:
     sys.stderr.write("Error: %d: %s\n" % (e.args[0], e.args[1]))
     sys.exit(1)
@@ -159,10 +209,6 @@ if verbose:
 
 cursor = link.cursor()
 
-
-#-----------------------------------------------------------------------------
-# Table settings
-#-----------------------------------------------------------------------------
 
 if options.tablePrefix:
     compoundTable = options.tablePrefix + "_compounds"
@@ -175,10 +221,10 @@ else:
     structure3DTable = "3D_structures"
     structureBinTable = "bin_structures"
 
-mychemTables = { 'compoundsTable' : compoundTable,
-                  'structure1DTable' : structure1DTable,
-                  'structure3DTable' : structure3DTable,
-                  'structureBinTable' : structureBinTable }
+mychemTables = {'compoundsTable': compoundTable,
+                'structure1DTable': structure1DTable,
+                'structure3DTable': structure3DTable,
+                'structureBinTable': structureBinTable}
 
 existingTables = []
 
@@ -191,49 +237,52 @@ for table in mychemTables:
             message = "Table '%s' already exists.\n" % (table)
             logger(message, logFile)
 
-if (len(existingTables) == 4) and not (options.append or options.replace or options.update):
-    message = "A complet set of tables alread exists. Which action should " \
-            + "be performed:\n"
-    sys.stdout.write(message)
-    while 1: 
-        action = raw_input("[A]ppend, [C]ancel, [R]eplace or [U]pdate?\n").strip()
-        if len(action) < 1:
-            continue
-        if action[0] in ['a','A']:
-            options.append = True
-            break
-        elif action[0] in ['c','C']:
-            link.close()
-            message = "Database loading cancelled\n"
-            logger(message, logFile)
-            if logFile:
-                logFile.close()
-            sys.exit(0)
-        elif action[0] in ['r','R']:
-            options.replace = True
-            break
-        elif action[0] in ['u','U']:
-            options.update = True
-            break
-        else:
-            continue
+if len(existingTables) == 4:
+    if not (options.append or options.replace or options.update):
+        message = ("A complet set of tables alread exists. Which action " +
+                   "should be performed:\n")
+        sys.stdout.write(message)
+        while 1:
+            input_str = raw_input("[A]ppend, [C]ancel, [R]eplace or " +
+                                  "[U]pdate?\n")
+            action = input_str.strip()
+            if len(action) < 1:
+                continue
+            if action[0] in ['a', 'A']:
+                options.append = True
+                break
+            elif action[0] in ['c', 'C']:
+                link.close()
+                message = "Database loading cancelled\n"
+                logger(message, logFile)
+                if logFile:
+                    logFile.close()
+                sys.exit(0)
+            elif action[0] in ['r', 'R']:
+                options.replace = True
+                break
+            elif action[0] in ['u', 'U']:
+                options.update = True
+                break
+            else:
+                continue
 
-elif len(existingTables) in [1,2,3]:
-    message = "Some tables (but not all) already exist. Which action should " \
-            + "be performed:\n"
+elif len(existingTables) in [1, 2, 3]:
+    message = ("Some tables (but not all) already exist. Which action " +
+               "should be performed:\n")
     sys.stdout.write(message)
-    while 1: 
+    while 1:
         action = raw_input("[C]ancel or [R]eplace?\n").strip()
         if len(action) < 1:
             continue
-        elif action[0] in ['c','C']:
+        elif action[0] in ['c', 'C']:
             link.close()
             message = "Database loading cancelled\n"
             logger(message, logFile)
             if logFile:
                 logFile.close()
             sys.exit(0)
-        elif action[0] in ['r','R']:
+        elif action[0] in ['r', 'R']:
             options.replace = True
             break
         else:
@@ -243,8 +292,8 @@ if options.append and verbose:
     if existingTables:
         message = "As requested, data will be appended to existing tables\n"
     else:
-        message = "The tables do not exist. A new table set will be " \
-                + "created.\n" 
+        message = ("The tables do not exist. A new table set will be " +
+                   "created.\n")
     logger(message, logFile)
 elif options.replace and verbose:
     if existingTables:
@@ -264,41 +313,39 @@ elif options.update and verbose:
 
 if options.replace:
     if 'compoundsTable' in existingTables:
-        query = "DROP TABLE IF EXISTS `%s`" % (compoundTable)
+        query = "DROP TABLE IF EXISTS `%s`" % compoundTable
         cursor.execute(query)
         link.commit()
         if verbose:
-            message = "The '%s' table has been dropped.\n" % (compoundTable)
+            message = "The '%s' table has been dropped.\n" % compoundTable
             logger(message, logFile)
     if 'structure1DTable' in existingTables:
-        query = "DROP TABLE IF EXISTS `%s`" % (structure1DTable)
+        query = "DROP TABLE IF EXISTS `%s`" % structure1DTable
         cursor.execute(query)
         link.commit()
         if verbose:
-            message = "The '%s' table has been dropped.\n" % (structure1DTable)
+            message = "The '%s' table has been dropped.\n" % structure1DTable
             logger(message, logFile)
     if 'structure3DTable' in existingTables:
-        query = "DROP TABLE IF EXISTS `%s`" % (structure3DTable)
+        query = "DROP TABLE IF EXISTS `%s`" % structure3DTable
         cursor.execute(query)
         link.commit()
         if verbose:
-            message = "The '%s' table has been dropped.\n" % (structure3DTable)
+            message = "The '%s' table has been dropped.\n" % structure3DTable
             logger(message, logFile)
     if 'structureBinTable' in existingTables:
-        query = "DROP TABLE IF EXISTS `%s`" % (structureBinTable)
+        query = "DROP TABLE IF EXISTS `%s`" % structureBinTable
         cursor.execute(query)
         link.commit()
         if verbose:
-            message = "The '%s' table has been dropped.\n" % (structureBinTable)
+            message = ("The '%s' table has been dropped.\n" %
+                       structureBinTable)
             logger(message, logFile)
     existingTables = []
     if verbose:
         message = "All existing tables have been dropped.\n"
         logger(message, logFile)
 
-#-----------------------------------------------------------------------------
-# Table creation
-#-----------------------------------------------------------------------------
 
 if not existingTables:
     # Create the compound table
@@ -364,74 +411,6 @@ CREATE TABLE IF NOT EXISTS `%s` (
         logger(message, logFile)
 
 
-#-----------------------------------------------------------------------------
-# load_structure() function
-#-----------------------------------------------------------------------------
-
-def load_structure(name, molfile):
-    if options.update:
-        query = """
-SELECT `id` FROM `%s` WHERE name='%s'
-""" % (compoundTable, link.escape_string(name))
-        result_len = cursor.execute(query)
-
-        if result_len > 0:
-            result = cursor.fetchone()
-            compound_id = result[0]
-
-            query = """
-UPDATE `%s`,`%s` SET `modified`=CURRENT_TIMESTAMP(),`molfile`='%s'
- WHERE `id`=%i AND `compound_id`=`id`;
-""" % (compoundTable, structure3DTable, link.escape_string(molfile), compound_id)
-            cursor.execute(query)
-
-            query = """
-UPDATE `%s`,`%s` SET
- `inchi`=MOLECULE_TO_INCHI(`molfile`),
- `smiles`=MOLECULE_TO_SMILES(`molfile`)
- WHERE `%s`.`compound_id`=%i
- AND `%s`.`compound_id`=%i
-""" % (structure1DTable, structure3DTable, structure1DTable, compound_id, structure3DTable, compound_id)
-            cursor.execute(query)
-
-            query = """
-UPDATE `%s`,`%s` SET
- `fp2`=FINGERPRINT2(`molfile`),
- `obserialized`=MOLECULE_TO_SERIALIZEDOBMOL(`molfile`)
- WHERE `%s`.`compound_id`=%i
- AND `%s`.`compound_id`=%i
-""" % (structureBinTable, structure3DTable, structureBinTable, compound_id, structure3DTable, compound_id)
-            cursor.execute(query)
-
-            return True
-
-    query = "INSERT INTO `%s` (`name`,`created`,`modified`)" % (compoundTable) \
-            + " VALUES ('%s',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP())" % (link.escape_string(name))
-    cursor.execute(query)
-    compound_id = cursor.lastrowid
-    query = """
-INSERT INTO `%s` (`compound_id`, `molfile`) VALUES (%i, '%s');
-""" % (structure3DTable, compound_id, link.escape_string(molfile))
-    cursor.execute(query)
-    query = """
-INSERT INTO `%s` (`compound_id`, `inchi`, `smiles`)
- SELECT `compound_id`, MOLECULE_TO_INCHI(`molfile`),
- MOLECULE_TO_SMILES(`molfile`) FROM `%s` WHERE `compound_id`=%i;
-""" % (structure1DTable, structure3DTable, compound_id)
-    cursor.execute(query)
-    query = """
-INSERT INTO `%s` (`compound_id`, `fp2`, `obserialized`)
- SELECT `compound_id`, FINGERPRINT2(`molfile`),
- MOLECULE_TO_SERIALIZEDOBMOL(`molfile`) FROM `%s` WHERE `compound_id`=%i;
-""" % (structureBinTable, structure3DTable, compound_id)
-    cursor.execute(query)
-    return True
-
-
-#-----------------------------------------------------------------------------
-# Parse the file and load the structures
-#-----------------------------------------------------------------------------
-
 dbFileName = args[0]
 
 try:
@@ -455,9 +434,9 @@ while 1:
         if name == "":
             name = "Mol" + str(molCount)
         if len(name) > 250:
-            sys.stderr.write("Error: molecule name is too long for %s" % (name))
+            sys.stderr.write("Error: molecule name is too long for %s" % name)
         else:
-            load_structure(name,molfile)
+            load_structure(name, molfile)
         molfile = ""
         lineCount = 0
         molCount += 1
@@ -469,10 +448,6 @@ while 1:
         if line[0:6] == "M END":
             ctEnd = True
 
-
-#-----------------------------------------------------------------------------
-# Close the handlers and print a summary
-#-----------------------------------------------------------------------------
 
 dbFile.close()
 link.commit()
@@ -488,4 +463,3 @@ logger(message, logFile, 1)
 
 if logFile:
     logFile.close()
-
