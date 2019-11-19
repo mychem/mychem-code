@@ -1,0 +1,470 @@
+#!/usr/bin/python
+
+# Copyright (c) 2010-2019 CNRS and University of Strasbourg
+# Author: Jerome Pansanel <jerome.pansanel@iphc.cnrs.fr>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the CNRS nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+"""This software is a exemple of tool for managing Mychem tables."""
+
+import logging
+import os
+import sys
+import getpass
+import argparse
+
+import pymysql
+
+PROG = "mychem_manager"
+VERSION = "1.2.0"
+DESCRIPTION = """%(prog)s load a file in MDL SDF format into
+                 a MySQL database and creates a chemical cartridge with
+                 Mychem.
+              """
+
+
+def get_logger(logfile=None, debug=False):
+    """Return a logger for managing log message.
+
+    :param logfile: the logfile to write the log messages to. If this
+                    parameter is not set, the log message will be
+                    written to the console
+    :type logfile: str
+    :param debug: if true, the log level is set to DEBUG
+    :type debug: bool
+    :return: A logger object
+    :rtype: logging.Logger
+    """
+    logger = logging.getLogger(PROG)
+    if debug:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+    if logfile:
+        # create file handler
+        handler = logging.FileHandler(logfile)
+    else:
+        # create console handler
+        handler = logging.StreamHandler()
+    # create formatter and add it to the handlers
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
+
+
+def load_structure(name, data, connection, tables):
+    """Load a structure in the database.
+
+    This function load the structures in the mychem database. If the
+    name of the molecule already exists in the database, the content of
+    the  field is updated. Otherwise, the structure is simply added to
+    the database.
+
+    :param name: the name of the molecule
+    :type name: str
+    :param molfile: the structure
+    :type molfile: str
+    :param connection: connection to the MySQL database
+    :type connection: pymysql.connections.Connection
+    :param tables: a dictionnary containing the name and type of the
+                   mychem tables
+    :type tables: dict
+    """
+    with connection.cursor() as cursor:
+        query = (
+            """INSERT INTO `{0}` (`name`, `created`)
+               VALUES ('{1}', CURRENT_TIMESTAMP())
+            """).format(tables['compounds'], connection.escape_string(name))
+        cursor.execute(query)
+        compound_id = cursor.lastrowid
+        query = (
+            """INSERT INTO `{0}` (`compound_id`, `molfile`) VALUES ({1}, '{2}');
+            """).format(tables['3D_structures'], compound_id,
+                        connection.escape_string(data))
+        cursor.execute(query)
+        query = (
+            """INSERT INTO `{0}` (`compound_id`, `inchi`, `smiles`)
+               SELECT `compound_id`, MOLECULE_TO_INCHI(`molfile`),
+               MOLECULE_TO_SMILES(`molfile`) FROM `{1}`
+               WHERE `compound_id`={2};
+            """).format(tables['1D_structures'], tables['3D_structures'],
+                        compound_id)
+        cursor.execute(query)
+        query = (
+            """INSERT INTO `{0}` (`compound_id`, `fp2`, `obserialized`)
+               SELECT `compound_id`, FINGERPRINT2(`molfile`),
+               MOLECULE_TO_SERIALIZEDOBMOL(`molfile`) FROM `{1}`
+               WHERE `compound_id`={2};
+            """).format(tables['bin_structures'], tables['3D_structures'],
+                        compound_id)
+        cursor.execute(query)
+        connection.commit()
+
+
+def create_arg_parser():
+    """Create the option parser.
+
+    This function create the option parser and return it.
+    :return: an argument parser
+    :rtype: argumentparser
+    """
+    parser = argparse.ArgumentParser(
+        prog=PROG,
+        version=VERSION, description=DESCRIPTION
+    )
+    parser.add_argument(
+        "sdfile",
+        help=("Name of the MDL SDF file containing the " +
+              "chemical-data to load into the MySQL database.")
+    )
+    parser.add_argument(
+        "-H", "--host", action="store", type=str, dest="host",
+        required=True, help="Name of the MySQL host."
+    )
+    parser.add_argument(
+        "-U", "--user", action="store", type=str, dest="user",
+        required=True, help="User for login to the MySQL server."
+    )
+    parser.add_argument(
+        "-D", "--db", action="store", type=str, dest="database",
+        required=True, help="Name of the MySQL database to use"
+    )
+    parser.add_argument(
+        "-P", "--password", action="store_true", dest="password",
+        help="Specify if a password is required to connect to MySQL.",
+    )
+    parser.add_argument(
+        "-n", "--nametag", action="store", type=str, dest="name_tag",
+        help=("Name of the tag used in the MDL SDF file " +
+              "to define the name of the chemical compound.")
+    )
+    parser.add_argument(
+        "-l", "--logfile", action="store", type=str, dest="log_file",
+        help="Name of the log file to send logging output to."
+    )
+    parser.add_argument(
+        "-p", "--prefix", action="store", type=str, dest="prefix",
+        default="mychem", help="Prefix added to the default table names."
+    )
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "-a", "--append", action="store_true", dest="append",
+        help=("Specify if the data should be added to the existing " +
+              " mychem tables.")
+    )
+    group.add_argument(
+        "-r", "--replace", action="store_true", dest="replace",
+        help="Specify if the new data should replace existing data."
+    )
+    parser.add_argument(
+        "-V", "--verbose", action="store_true", dest="verbose",
+        help="Enable verbose debug messages."
+    )
+
+    return parser
+
+
+def check_tables(connection, tables, logger, append=False):
+    """Check if the set of tables is fine.
+
+    :param connection: a connection to the MySQL database
+    :type connection: pymysql.connections.Connection
+    :param tables: a dictionnary containing the types and names of the
+                     tables to create
+    :type tables: dict
+    :param logger: a logger for managing log messages
+    :type logger: logging.Logger
+    :param append: if true, the data should be appended to existing
+                   tables
+    :type append: bool
+    :return: a code that indicate the status of the check
+    :rtype: int
+    """
+    logger.info("Checking if tables already exist.")
+    message = None
+    with connection.cursor() as cursor:
+        existing_tables = []
+        query = "SHOW TABLES"
+        cursor.execute(query)
+        connection.commit()
+        results = cursor.fetchall()
+        for row in results:
+            if row[0] in tables.values():
+                existing_tables.append(row[0])
+    if existing_tables:
+        if append:
+            if len(existing_tables) != len(tables):
+                missing_tables = set(tables.values()) - set(existing_tables)
+                message = ("Cannot append data, some tables are missing: " +
+                           "%s." % list(missing_tables))
+                logger.error(message)
+                return -1
+            message = ("A complete set of tables are existing. We can " +
+                       "append data to them.")
+            logger.info(message)
+            return 0
+        message = ("Some tables already exist: {0}. Select either the " +
+                   "append or the replace option to solve this " +
+                   "issue.").format(existing_tables)
+        logger.error(message)
+        return -1
+    message = ("No tables are existing. Default set of tables will be " +
+               "created")
+    logger.info(message)
+    return 1
+
+
+def create_tables(connection, tables, logger, delete_tables=False):
+    """Create the default set of tables.
+
+    :param connection: a connection to the MySQL database
+    :type connection: pymysql.connections.Connection
+    :param tables: a dictionnary containing the types and names of the
+                   tables to create
+    :type tables: dict
+    :param logger: a logger for managing log messages
+    :type logger: logging.Logger
+    :param delete_tables: if True, delete existing tables and create
+                          a new set if empty tables
+    :type delete_tables: bool
+    :return True if the table could be created
+    :rtype: bool
+    """
+    message = "Creating the default set of tables "
+    if delete_tables:
+        message += "by replacing existing tables if they are existing."
+    else:
+        message += "only if they do not exist."
+    logger.debug(message)
+    with connection.cursor() as cursor:
+        if delete_tables:
+            for table in tables.values():
+                query = "DROP TABLE IF EXISTS `%s`" % table
+                logger.debug("Executing query: %s" % query)
+                cursor.execute(query)
+            connection.commit()
+
+        # Create the compound table
+        query = ("""CREATE TABLE `{0}` (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+            `created` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            PRIMARY KEY id (`id`),
+            KEY name (`name`)
+        )
+        ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
+        COMMENT='Compound Library';
+        """).format(tables['compounds'])
+        logger.debug("Executing query: %s" % query)
+        cursor.execute(query)
+
+        # Create the 1D_structures table
+        query = ("""CREATE TABLE `{0}` (
+        `compound_id` int(11) unsigned NOT NULL,
+        `inchi` text NOT NULL,
+        `smiles` text NOT NULL,
+        PRIMARY KEY compound_id (`compound_id`)
+        )
+        ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
+        COMMENT='Compound 1D Structures';
+        """).format(tables['1D_structures'])
+        logger.debug("Executing query: %s" % query)
+        cursor.execute(query)
+
+        # Create the 3D_structures table
+        query = ("""CREATE TABLE `{0}` (
+           `compound_id` int(11) unsigned NOT NULL,
+           `molfile` text NOT NULL,
+           PRIMARY KEY compound_id (`compound_id`)
+        )
+        ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
+        COMMENT='Compound 3D Structures';
+        """).format(tables['3D_structures'])
+        logger.debug("Executing query: %s" % query)
+        cursor.execute(query)
+
+        # Create the bin_structures table
+        query = ("""CREATE TABLE `{0}` (
+            `compound_id` int(11) unsigned NOT NULL,
+            `fp2` blob NULL,
+            `obserialized` blob NULL,
+            PRIMARY KEY compound_id (`compound_id`)
+        )
+        ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
+        COMMENT='Compound Binary Structures';
+        """).format(tables['bin_structures'])
+        logger.debug("Executing query: %s" % query)
+        cursor.execute(query)
+
+    connection.commit()
+    message = ("The mychem tables have been successfully created.")
+    logger.info(message)
+    return True
+
+
+def parse_sdfile(sdfile, connection, tables, logger):
+    """Parse sdfile and load data to the tables.
+
+    :param sdfile: the MDL SDF file to parse
+    :type sdfile: str
+    :param connection: a connection to the MySQL database
+    :type connection: pymysql.connections.Connection
+    :param tables: a dictionnary containing the types and names of the
+                   tables to create
+    :type tables: dict
+    :param logger: a logger for managing log messages
+    :type logger: logging.Logger
+    """
+    message = ("Opening MDL SDF file %s." % sdfile)
+    logger.debug(message)
+
+    file_handler = open(sdfile, 'r')
+    data = ""
+    line_count = 0
+    molecule_count = 0
+    name = ""
+    end_tag = False
+
+    while 1:
+        line = file_handler.readline()
+        if not line:
+            break
+        line_count += 1
+        if line[0:4] == "$$$$":
+            if name == "":
+                name = "Mol" + str(molecule_count)
+            if len(name) > 250:
+                name = name[0:249]
+            else:
+                logger.debug("Loading structure %s" % name)
+                load_structure(name, data, connection, tables)
+            data = ""
+            name = ""
+            line_count = 0
+            molecule_count += 1
+            end_tag = False
+        elif not end_tag:
+            data += line
+            if line_count == 1:
+                name = line.strip()
+            if line[0:6] == "M END":
+                end_tag = True
+    message = ("Closing MDL SDF file %s" % sdfile)
+    logger.debug(message)
+    file_handler.close()
+
+
+def main():
+    """Launch the main program execution."""
+    parser = create_arg_parser()
+    args = parser.parse_args()
+
+    logger = get_logger(logfile=args.log_file, debug=args.verbose)
+
+    # Set connection parameters
+    parameters = {
+        'host': args.host,
+        'user': args.user,
+        'db': args.database
+    }
+    if args.password:
+        parameters['passwd'] = getpass.getpass(
+            prompt="Enter MySQL password: "
+        )
+
+    try:
+        connection = pymysql.connect(
+            **parameters
+        )
+    except pymysql.Error as err:
+        message = ("%d: %s" % (err.args[0], err.args[1]))
+        logger.error(message)
+        sys.exit(1)
+
+    logger.debug("The connection to MySQL is successfull.")
+
+    # Setting default prefix
+    prefix = args.prefix
+
+    mychem_tables = {
+        'compounds': prefix + "_compounds",
+        '1D_structures': prefix + "_1D_structures",
+        '3D_structures': prefix + "_3D_structures",
+        'bin_structures': prefix + "_bin_structures"
+    }
+
+    if not args.replace:
+        check = check_tables(
+            connection, mychem_tables, logger, append=args.append
+        )
+        # No tables are existing, need to create a basic set
+        if check == 1:
+            if not create_tables(connection, mychem_tables, logger):
+                sys.exit(1)
+
+        # An error occured when checking the tables
+        elif check == -1:
+            sys.exit(1)
+    else:
+        if not create_tables(
+                connection, mychem_tables, logger, delete_tables=True
+        ):
+            # An error occured when creating the tables
+            sys.exit(1)
+
+    # Once the tables are created or correctly in place, we can upload the
+    # data
+    sdfile = args.sdfile
+
+    if not sdfile:
+        args.print_help()
+        sys.exit(1)
+
+    if not os.path.isfile(sdfile):
+        message = ("No such MDL SDF file: %s" % sdfile)
+        logger.error(message)
+        sys.exit(1)
+
+    try:
+        logger.info("Adding data to the mychem tables.")
+        parse_sdfile(sdfile, connection, mychem_tables, logger=logger)
+    except IOError as err:
+        message = ("Could not open MDL SDF file '%s': " % (sdfile))
+        logger.error(message)
+        logger.error(err.args[1])
+        sys.exit(1)
+
+    message = ("The data contained in the MDL SDF file ({0}) have " +
+               "been successfully loaded.").format(sdfile)
+    logger.info(message)
+
+    connection.close()
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()
