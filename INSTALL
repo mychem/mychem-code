@@ -15,9 +15,9 @@ This section describes a simple way to compile and install Mychem.
 === Source Extraction ===
 If you are using a command line interface, follow this instructions:
 - For the tar gzipped archive:
-# tar -xfzv mychem-0.9.3.tar.gz
+# tar -xfzv mychem-1.0.0.tar.gz
 - For the zip archive:
-# unzip mychem-0.9.3.zip
+# unzip mychem-1.0.0.zip
 
 === Compilation and Installation ===
 CMake can build the libraries and executables into any directory. If the

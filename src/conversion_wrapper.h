@@ -1,7 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009-2011 by CNRS                                       *
- *   jerome.pansanel@iphc.cnrs.fr -- Project founder and lead developer    *
- *   aureliedeluca@gmail.com -- Developer                                  *
+ *   Copyright (C) 2009-2019 by CNRS and University of Strasbourg          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,7 +16,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02111-1301, USA.         *
  ***************************************************************************/
-
 /**
  * This file is part of the Mychem software. It contains function declarations
  * related to chemical file conversion.
