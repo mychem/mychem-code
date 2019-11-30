@@ -20,7 +20,7 @@ downloaded.
 Installation
 ------------
 
-See the `INSTALL.rst <https://github.com/mychem/mychem-code/install.rst>`_
+See the `INSTALL.rst <https://github.com/mychem/mychem-code/INSTALL.rst>`_
 file for the installation instructions on GNU/Linux. Instructions for
 Mac OS X and Windows are given on the dedicated `documentation page <https://mychem.github.io/docs/installation.html>`_ .
 
@@ -32,4 +32,4 @@ Mychem is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation version 2 of the License, or
 (at your option) any later version. Full details
-can be found in the [COPYING](https://github.com/mychem/mychem-code/COPYING) file.
+can be found in the `COPYING <https://github.com/mychem/mychem-code/COPYING>`_ file.
