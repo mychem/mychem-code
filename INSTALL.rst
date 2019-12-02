@@ -23,7 +23,7 @@ procedure (in particular on Windows and Mac OS X), see the
 Get the last stable release
 +++++++++++++++++++++++++++
 
-The last stable release can be downloaded from the `Mychem GitHub repository <https://github.com/mychem/mychem-code/archive/1.0.0.tar.gz>`_.
+The last stable release can be downloaded from the `Mychem GitHub release page <//github.com/mychem/mychem-code/releases/download/v1.0.0/mychem-1.0.0.tgz>`_.
 
 Uncompress the code
 +++++++++++++++++++
@@ -33,7 +33,7 @@ code with:
 
 ::
 
-   $ tar xfzv 1.0.0.tar.gz
+   $ tar xfzv mychem-1.0.0.tgz
 
 Compilation and Installation
 ++++++++++++++++++++++++++++
@@ -46,7 +46,7 @@ this short tutorial:
 
 ::
 
-   $ cd mychem-code-1.0.0
+   $ cd mychem-1.0.0
    $ mkdir build
    $ cd build
    $ cmake ..
