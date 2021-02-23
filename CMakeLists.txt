@@ -23,9 +23,9 @@ include (CheckCXXCompilerFlag)
 include (MacroEnsureVersion)
 
 # Mychem version number.
-set(MYCHEM_VERSION_MAJOR 0)
-set(MYCHEM_VERSION_MINOR 9)
-set(MYCHEM_VERSION_RELEASE 4)
+set(MYCHEM_VERSION_MAJOR 1)
+set(MYCHEM_VERSION_MINOR 0)
+set(MYCHEM_VERSION_RELEASE 1)
 set(MYCHEM_VERSION "${MYCHEM_VERSION_MAJOR}.${MYCHEM_VERSION_MINOR}.${MYCHEM_VERSION_RELEASE}")
 
 #-----------------------------------------------------------------------------
