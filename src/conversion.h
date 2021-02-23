@@ -22,6 +22,7 @@
  * @file conversion.h
  * @short Function declarations of the Mychem conversion module.
  * @author Jerome Pansanel <jerome.pansanel@iphc.cnrs.fr>
+ * @author Fredrik Wallner <fredrik@wallner.nu>
  */
 
 #ifndef __CONVERSION_H
