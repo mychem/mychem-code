@@ -1,3 +1,11 @@
+2021-02-23 Jerome Pansanel
+
+	* Release 1.0.1
+
+	* Minor bug fix
+
+	* Update contributor list
+
 2019-11-20 Jerome Pansanel
 
 	* Release 1.0.0
@@ -6,9 +14,9 @@
 
 2018-03-20 Jerome Pansanel
 
-        * Release 0.9.4
+	* Release 0.9.4
 
-        * Bug fixes
+	* Bug fixes
 
 2015-10-27 Jerome Pansanel
 
@@ -101,12 +109,12 @@
 	* The Mychem software has been completly rewritten
 
 	* src/converion.c, src/conversion.h:
-          - mol2_to_molecule function added
-          - molecule_to_mol2 function added
+	  - mol2_to_molecule function added
+	  - molecule_to_mol2 function added
 
 	* src/helper.c, src/helper.h, src/helper_wrapper.h,
-          src/helper_wrapper.cpp
-          - inchi_version function added
+	  src/helper_wrapper.cpp
+	  - inchi_version function added
 
 	* Many bug fixes
 
@@ -114,7 +122,7 @@
 
 	* The Mychem3 documentation has been updated
 
-        * Mychem2 is no longer supported
+	* Mychem2 is no longer supported
 
 2009-06-03 Jerome Pansanel
 
@@ -180,22 +188,22 @@
 
 	* src/conversion/conversion.c, src/conversion/conversion.h:
 	  - molecule_to_inchi function added
-          - inchi_to_molecule function added
+	  - inchi_to_molecule function added
 
 2008-11-11 Jerome Pansanel
 
 	* CMakeLists.txt:
-          - The file has been updated to better handle the compiler flags
+	  - The file has been updated to better handle the compiler flags
 
 	* cmake/modules/MacroEnsureVersion.cmake:
 	  - new file
 
 2008-11-10 Jerome Pansanel
 
-        * Add wrapper for the helper module (fix the include of babelconfig.h)
+	* Add wrapper for the helper module (fix the include of babelconfig.h)
 
-        * conversion, modification, molmatch and property modules:
-          - fix an important issue with the arguments given by MySQL
+	* conversion, modification, molmatch and property modules:
+	  - fix an important issue with the arguments given by MySQL
 
 2008-06-19 Jerome Pansanel
 
@@ -206,7 +214,7 @@
 2008-06-18 Jerome Pansanel
 
 	* src/conversion/conversion.c, src/conversion/conservion.h:
-          - fingerprint3 function added
+	  - fingerprint3 function added
 	  - fingerprint4 function added
 
 	* doc/mychem/installation.xml:
@@ -320,7 +328,7 @@
 	  property_test.c tests molweight(), exactmass(), number_of_atoms(),
 	  number_of_heavy_atoms(), number_of_bonds(), number_of_rotable_bonds(),
 	  molformula()
-          test_functions.{h,c} contains two functions useful for all modules.
+	  test_functions.{h,c} contains two functions useful for all modules.
 
 2008-02-25 Jerome Pansanel
 
@@ -329,7 +337,7 @@
 	  - helper_test tests mychem_version() and openbabel_version()
 
 	* doc/mychem:
-          - installation.xml has been updated to introduce the test process
+	  - installation.xml has been updated to introduce the test process
 
 2008-02-19 Jerome Pansanel
 
