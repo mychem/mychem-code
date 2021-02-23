@@ -24,6 +24,7 @@
  * @short Mychem Conversion Wrapper.
  * @author Jerome Pansanel <jerome.pansanel@iphc.cnrs.fr>
  * @author Aurelie De Luca <aureliedeluca@gmail.com>
+ * @author Fredrik Wallner <fredrik@wallner.nu>
  */
 
 #include "conversion_wrapper.h"
