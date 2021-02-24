@@ -80,7 +80,7 @@ IF( OPENBABEL2_EXECUTABLE )
 
 ELSE( OPENBABEL2_EXECUTABLE )
   FIND_PROGRAM(OPENBABEL2_EXECUTABLE
-               NAMES babel
+               NAMES obabel
                PATHS
                [HKEY_CURRENT_USER\\SOFTWARE\\OpenBabel\ 2.0.2]
                $ENV{OPENBABEL2_EXECUTABLE}
