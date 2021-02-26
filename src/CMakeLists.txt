@@ -1,32 +1,26 @@
 include_directories(
-    ${MySQL_INCLUDE_DIR} 
-    ${OPENBABEL2_INCLUDE_DIR}
+    ${MYSQL_INCLUDE_DIR} 
+    ${OPENBABEL3_INCLUDE_DIR}
     ${CMAKE_BINARY_DIR}/include
     ${CMAKE_SOURCE_DIR}/include
 )
 
 if (BUILD_SHARED)
     message(STATUS "Defining dlhandler source files")
-    if (WIN32)
-        set(dlhandler_SRCS
-            ${CMAKE_SOURCE_DIR}/src/dlhandler_win32.cpp
-        )
-    else (WIN32)
-        set(dlhandler_SRCS
-            ${CMAKE_SOURCE_DIR}/src/dlhandler_unix.cpp
-        )
-    endif (WIN32)
+    set(
+        dlhandler_SRCS
+        ${CMAKE_SOURCE_DIR}/src/dlhandler_unix.cpp
+    )
 endif (BUILD_SHARED)
 
 set(serialization_SRCS
 	${CMAKE_SOURCE_DIR}/src/serialization.cpp
 )
 
-if (NOT WIN32)
-    set(MYCHEM_LIBRARIES
-        dl
-    )
-endif (NOT WIN32)
+set(
+    MYCHEM_LIBRARIES
+    dl
+)
 
 add_definitions( -DHAVE_DLOPEN )
 
@@ -51,8 +45,8 @@ set_target_properties( mychem-lib PROPERTIES OUTPUT_NAME mychem )
 set_target_properties( mychem-lib PROPERTIES VERSION ${MYCHEM_VERSION} SOVERSION ${MYCHEM_VERSION_MAJOR} )
 
 target_link_libraries( mychem-lib
-    ${OPENBABEL2_LIBRARIES}
-    ${MySQL_LIBRARIES}
+    ${OPENBABEL3_LIBRARIES}
+    ${MYSQL_LIBRARIES}
     ${MYCHEM_LIBRARIES}
 )
 
