@@ -59,7 +59,7 @@ option(BUILD_SHARED "enable static build support" ON)
 include( FindPkgConfig )
 
 # Open Babel dependency
-find_package( OpenBabel3 REQUIRED )
+find_package( OpenBabel2 REQUIRED )
 
 # MySQL
 find_package( MySQL REQUIRED )
@@ -70,7 +70,6 @@ find_package( MySQL REQUIRED )
 #-----------------------------------------------------------------------------
 
 message(STATUS "Mychem installation directory: ${MYSQL_PLUGIN_DIR}")
-
 
 #-----------------------------------------------------------------------------
 # Set platform specific stuff

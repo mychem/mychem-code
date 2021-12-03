@@ -14,7 +14,7 @@
 # ::
 #
 #   MYSQL_LIBRARIES, full path to the MySQL or MariaDB
-#   MYSQL_PLUGIN_DIR    full path to plugin directory
+#   PLUGIN_DIR    full path to plugin directory
 #   MYSQL_INCLUDE_DIR   include dir to be used when using the MySQL or MariaDB
 #                     library
 #   MYSQL_FOUND         set to true if MySQL or MariaDB was found
@@ -59,24 +59,23 @@ find_program(MYSQL_CONFIG
     /usr/local/bin
 )
 
+# Use mariadb flavor by default
 if(NOT MYSQL_FLAVOR)
     if(MARIADB_CONFIG)
         set(MYSQL_FLAVOR "mariadb")
-        set(DB_CONFIG ${MARIADB_CONFIG})
     elseif(MYSQL_CONFIG)
         set(MYSQL_FLAVOR "mysql")
-        set(DB_CONFIG ${MYSQL_CONFIG})
+    else()
+	message(FATAL_ERROR "MYSQL_FLAVOR is not defined")
+    endif()
+endif()
+
+if(NOT MYSQL_CONFIG)
+    if(MARIADB_CONFIG)
+        set(DB_CONFIG ${MARIADB_CONFIG})
     endif()
 else()
-    if(MYSQL_FLAVOR MATCHES "mariadb")
-        if(MARIADB_CONFIG)
-            set(DB_CONFIG ${MARIADB_CONFIG})
-        endif()
-    elseif(MYSQL_FLAVOR MATCHES "mysql")
-        if(MYSQL_CONFIG)
-           set(DB_CONFIG ${MYSQL_CONFIG})
-        endif()
-    endif()
+    set(DB_CONFIG ${MYSQL_CONFIG})
 endif()
 
 if(DB_CONFIG)
@@ -120,6 +119,10 @@ if(DB_CONFIG)
         list(APPEND MYSQL_ADD_LIBRARY_PATH "${LIB}")
     endforeach(LIB ${MYSQL_LIBS})
 
+
+    if(UNIX)
+        set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES} ".so.1")
+    endif()
     set(TMP_MYSQL_LIBRARIES "")
     foreach(LIB ${MYSQL_ADD_LIBRARIES})
         find_library(
@@ -149,15 +152,20 @@ if(DB_CONFIG)
         ARGS --plugindir
 	OUTPUT_VARIABLE TMP_PLUGIN_DIR
     )
-    set(MYSQL_PLUGIN_DIR ${TMP_PLUGIN_DIR} CACHE FILEPATH INTERNAL)
+    if(NOT PLUGIN_DIR)
+        set(PLUGIN_DIR ${TMP_PLUGIN_DIR} CACHE FILEPATH INTERNAL)
+    endif()
 endif()
+
 
 if(MYSQL_INCLUDE_DIR AND MYSQL_LIBRARIES)
     set(MYSQL_FOUND TRUE CACHE INTERNAL "MySQL found")
     if(${MYSQL_FLAVOR} MATCHES "mariadb")
         message(STATUS "Found MariaDB ${MYSQL_VERSION}: ${MYSQL_INCLUDE_DIR}, ${MYSQL_LIBRARIES}")
+        message(STATUS "Mariadb plugin_dir: ${PLUGIN_DIR}")
     else()
         message(STATUS "Found MySQL ${MYSQL_VERSION}: ${MYSQL_INCLUDE_DIR}, ${MYSQL_LIBRARIES}")
+	message(STATUS "MySQL plugin_dir: ${PLUGIN_DIR}")
     endif()
 else(MYSQL_INCLUDE_DIR AND MYSQL_LIBRARIES)
     set(MYSQL_FOUND FALSE CACHE INTERNAL "MySQL found")
