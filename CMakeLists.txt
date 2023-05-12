@@ -69,7 +69,7 @@ find_package( MySQL REQUIRED )
 # Installation directory
 #-----------------------------------------------------------------------------
 
-message(STATUS "Mychem installation directory: ${MYSQL_PLUGIN_DIR}")
+message(STATUS "Mychem installation directory: ${PLUGIN_DIR}")
 
 #-----------------------------------------------------------------------------
 # Set platform specific stuff
