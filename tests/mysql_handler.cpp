@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009-2011 by CNRS                                       *
- *   jerome.pansanel@iphc.cnrs.fr -- Project founder and lead developer    *
+ *   Copyright (C) 2009-2021 by CNRS and University of Strasbourg          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -54,8 +53,8 @@ bool MySQLHandler::connect(string host, string user, string passwd, string db)
     cout << "Error: could not connect to MySQL!\n" << mysql_error(&_mysql) << endl;
     return false;
   }
-
-  _mysql.reconnect = 1;
+  my_bool reconnect = 1;
+  mysql_options(&_mysql, MYSQL_OPT_RECONNECT, &reconnect);
 
   return true;
 }

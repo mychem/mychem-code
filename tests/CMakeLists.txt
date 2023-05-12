@@ -4,7 +4,7 @@ set( MYCHEM_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/" )
 # Helper Module CMakeLists.txt File
 #
 include_directories(
-    ${MySQL_INCLUDE_DIR} 
+    ${MYSQL_INCLUDE_DIR} 
     ${OPENBABEL2_INCLUDE_DIR}
     ${CMAKE_BINARY_DIR}/include 
     ${CMAKE_SOURCE_DIR}/include 
@@ -22,7 +22,7 @@ set( conversion_test_SRCS
 )
 add_executable( conversion_test ${conversion_test_SRCS} )
 target_link_libraries( conversion_test
-    ${MySQL_LIBRARIES}
+    ${MYSQL_LIBRARIES}
 )
 add_test( ConversionTest ${CMAKE_CURRENT_BINARY_DIR}/conversion_test
           ${MY_ARGS} -d ${MYCHEM_DATA_DIR}
@@ -38,7 +38,7 @@ set( helper_test_SRCS
 )
 add_executable( helper_test ${helper_test_SRCS} )
 target_link_libraries( helper_test
-    ${MySQL_LIBRARIES}
+    ${MYSQL_LIBRARIES}
 )
 add_test( HelperTest ${CMAKE_CURRENT_BINARY_DIR}/helper_test
           ${MY_ARGS} -d ${MYCHEM_DATA_DIR}
@@ -54,7 +54,7 @@ set( modification_test_SRCS
 )
 add_executable( modification_test ${modification_test_SRCS} )
 target_link_libraries( modification_test
-    ${MySQL_LIBRARIES}
+    ${MYSQL_LIBRARIES}
 )
 add_test( ModificationTest ${CMAKE_CURRENT_BINARY_DIR}/modification_test
           ${MY_ARGS} -d ${MYCHEM_DATA_DIR}
@@ -70,7 +70,7 @@ set( molmatch_test_SRCS
 )
 add_executable( molmatch_test ${molmatch_test_SRCS} )
 target_link_libraries( molmatch_test
-    ${MySQL_LIBRARIES}
+    ${MYSQL_LIBRARIES}
 )
 add_test( MolmatchTest ${CMAKE_CURRENT_BINARY_DIR}/molmatch_test
           ${MY_ARGS} -d ${MYCHEM_DATA_DIR}
@@ -86,7 +86,7 @@ set( property_test_SRCS
 )
 add_executable( property_test ${property_test_SRCS} )
 target_link_libraries( property_test
-    ${MySQL_LIBRARIES}
+    ${MYSQL_LIBRARIES}
 )
 add_test( PropertyTest ${CMAKE_CURRENT_BINARY_DIR}/property_test
           ${MY_ARGS} -d ${MYCHEM_DATA_DIR}

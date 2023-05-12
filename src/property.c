@@ -159,11 +159,11 @@ void number_of_atoms_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong number_of_atoms(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long number_of_atoms(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong count = 0;
+  long long count = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -207,11 +207,11 @@ void number_of_heavy_atoms_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong number_of_heavy_atoms(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long number_of_heavy_atoms(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong count = 0;
+  long long count = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -255,11 +255,11 @@ void number_of_bonds_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong number_of_bonds(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long number_of_bonds(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong count = 0;
+  long long count = 0;
 
   strncpy(inputMol, args->args[0], args->lengths[0]);
   inputMol[args->lengths[0]] = 0;
@@ -294,11 +294,11 @@ void number_of_rotable_bonds_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong number_of_rotable_bonds(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long number_of_rotable_bonds(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong count = 0;
+  long long count = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -342,11 +342,11 @@ void total_charge_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong total_charge(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long total_charge(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong count = 0;
+  long long count = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -462,11 +462,11 @@ void number_of_acceptors_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong number_of_acceptors(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long number_of_acceptors(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong acceptors = 0;
+  long long acceptors = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -510,11 +510,11 @@ void number_of_donors_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong number_of_donors(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long number_of_donors(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong donors = 0;
+  long long donors = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -702,11 +702,11 @@ void is_2D_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong is_2D(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long is_2D(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong is2DBool = 0;
+  long long is2DBool = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -750,11 +750,11 @@ void is_3D_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong is_3D(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long is_3D(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong is3DBool = 0;
+  long long is3DBool = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -798,11 +798,11 @@ void is_chiral_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong is_chiral(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long is_chiral(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong isChiralBool = 0;
+  long long isChiralBool = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */
@@ -846,11 +846,11 @@ void number_of_rings_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong number_of_rings(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long number_of_rings(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *inputMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
-  longlong count = 0;
+  long long count = 0;
 
   if (args->args[0] == NULL) {
     /* Arguments can not be NULL */

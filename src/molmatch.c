@@ -55,7 +55,7 @@ void match_substruct_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong match_substruct(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long match_substruct(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   if ((args->args[0] == NULL) || (args->args[1] == NULL)) {
     /* Arguments can not be NULL */
@@ -74,7 +74,7 @@ longlong match_substruct(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *arg
   char *queryMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
   unsigned int *intptr = (unsigned int *) args->args[1];
   unsigned int totalsize = intptr[0];
-  longlong match_bool = 0;
+  long long match_bool = 0;
 
   if (totalsize == 0) {
     /* empty molecule */
@@ -287,13 +287,13 @@ void substruct_count_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong substruct_count(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
+long long substruct_count(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null, char *error)
 {
   /* Fix a MySQL end string char issue */
   char *queryMol = (char *) malloc(sizeof(char)*(args->lengths[0]+1));
   unsigned int *intptr = (unsigned int *) args->args[1];
   unsigned int totalsize = intptr[0];
-  longlong number_of_substructure = 0;
+  long long number_of_substructure = 0;
 
   if ((args->args[0] == NULL) || (args->args[1] == NULL)) {
     /* Arguments can not be NULL */
@@ -524,7 +524,7 @@ void bit_fp_count_deinit(UDF_INIT *initid __attribute__((unused)))
 {
 }
 
-longlong bit_fp_count(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null __attribute__((unused)), char *error)
+long long bit_fp_count(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *is_null __attribute__((unused)), char *error)
 {
   int *intptr = NULL;
   unsigned long int *ulintptr = NULL;
