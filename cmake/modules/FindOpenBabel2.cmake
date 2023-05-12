@@ -34,8 +34,8 @@ else (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
         PATHS
         $ENV{OPENBABEL2_INCLUDE_DIR}
         ${_obIncDir}
-        /usr/local/include
-        /usr/include
+        /usr/local/include/openbabel-2.0
+        /usr/include/openbabel-2.0
     )
 
     find_library(OPENBABEL2_LIBRARIES NAMES openbabel
