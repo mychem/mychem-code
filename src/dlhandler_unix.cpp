@@ -30,11 +30,7 @@
 #include <dlfcn.h>
 #include <cstdio>
 
-#ifdef __APPLE__
-#define OBLIBRARY "libopenbabel.4.dylib"
-#else
-#define OBLIBRARY "libopenbabel.so.4"
-#endif
+#define OBLIBRARY "libopenbabel.so.5"
 
 using namespace std;
 
