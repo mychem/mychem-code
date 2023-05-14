@@ -45,10 +45,16 @@
 ##############################################################################
 
 
+if(DBD_NAME)
+    # Set outside
+else(DBD_NAME)
+    set(DBD_NAME, "mysql")
+endif(DBD_NAME)
+
 if(UNIX)
     set(MYSQL_CONFIG_PREFER_PATH "$ENV{MYSQL_HOME}/bin" CACHE FILEPATH
-        "preferred path to MySQL (mysql_config)")
-    find_program(MYSQL_CONFIG mysql_config
+        "preferred path to MySQL (${DBD_NAME}_config)")
+    find_program(MYSQL_CONFIG ${DBD_NAME}_config
                  ${MYSQL_CONFIG_PREFER_PATH}
                  /usr/local/mysql/bin/
                  /usr/local/bin/
@@ -56,7 +62,7 @@ if(UNIX)
     )
 
     if(MYSQL_CONFIG)
-        message(STATUS "Using mysql-config: ${MYSQL_CONFIG}")
+        message(STATUS "Using ${DBD_NAME}_config: ${MYSQL_CONFIG}")
 
         # set INCLUDE_DIR
         exec_program(${MYSQL_CONFIG}
@@ -113,7 +119,7 @@ find_path(MySQL_INCLUDE_DIR mysql.h
           /opt/mysql/mysql/include
           /opt/mysql/mysql/include/mysql
           /usr/include
-          /usr/include/mysql
+          /usr/include/${DBD_NAME}
           ${MYSQL_INCLUDEDIR}
 )
 
