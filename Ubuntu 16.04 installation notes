@@ -1,0 +1,141 @@
+Ubuntu 16.04 installation notes for OVH / Linode / Digital Ocean VPS
+
+
+# Changed root password if necessary...
+sudo passwd root
+
+# Added new user
+adduser USER
+
+# Added user to sudo group
+gpasswd -a USER sudo
+
+# Install LAMP as in
+# https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-14-04
+# https://www.linode.com/docs/websites/lamp/lamp-on-ubuntu-14-04
+
+# Reconnect as USER and update apt cache
+su USER
+sudo apt-get update
+
+# Install Apache2
+sudo apt-get install apache2
+
+# Modify conf to disable KeepAlive
+sudo nano /etc/apache2/apache2.conf
+
+-- KeepAlive Off
+
+# Change default multi-processing module (MPM) for Apache from Event to Prefork
+sudo nano /etc/apache2/mods-available/mpm_prefork.conf
+
+<IfModule mpm_prefork_module>
+        StartServers            4
+        MinSpareServers         20
+        MaxSpareServers         40
+        MaxRequestWorkers       200
+        MaxConnectionsPerChild  4500
+</IfModule>
+
+# Disable the event module and enable prefork
+sudo a2dismod mpm_event
+sudo a2enmod mpm_prefork
+
+# Restart Apache:
+sudo service apache2 restart
+
+# Install MySQL server
+sudo apt-get install mysql-server
+
+# Configure MySQL
+mysql_secure_installation
+
+# Log in MySQL and add users and mychem DB
+mysql -u root -p 
+CREATE USER 'USER'@'localhost' IDENTIFIED BY '*******';
+GRANT ALL PRIVILEGES ON * . * TO 'USER'@'localhost';
+
+# Logout MySQL and login back again
+mysql -u USER -p
+CREATE DATABASE mychem;
+
+# Install PHP
+sudo apt-get install php libapache2-mod-php php-mcrypt php-mysql
+
+# Prioritize php page
+sudo nano /etc/apache2/mods-enabled/dir.conf
+
+<IfModule mod_dir.c>
+    DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
+</IfModule>
+
+# Disable Apache autoindex
+sudo a2dismod autoindex
+
+sudo service apache2 restart
+
+# Change ownership of webroot
+sudo chown -R USER:USER /var/www/html
+
+
+# Install Mychem Stack
+sudo apt-get install openbabel libopenbabel-dev libmysqlclient-dev python-mysqldb cmake g++ zip
+
+cd ~
+wget https://github.com/mychem/mychem-code/archive/v0.9.3.zip
+unzip v0.9.3.zip
+
+cd mychem-code-0.9.3
+mkdir build
+cd build
+
+# Check via WinSCP if the following exists :
+/usr/include/openbabel-2.0
+/usr/lib/libopenbabel.so
+
+# if so...
+# execute cmake for source build
+cmake -DOPENBABEL2_INCLUDE_DIR=/usr/include/openbabel-2.0 -DOPENBABEL2_LIBRARIES=/usr/lib/libopenbabel.so ..
+
+
+# build and install
+make
+sudo make install
+cd ..
+
+# Disable AppArmor
+sudo nano /etc/apparmor.d/usr.sbin.mysqld
+
+...and add the following lines replacing 2.3.2 with the correct openbabel version (in case it is a different version)
+
+/usr/lib/openbabel/* m,
+/usr/lib/openbabel/2.3.2/* m,
+/usr/share/openbabel/* r,
+/usr/share/openbabel/2.3.2/* r,
+
+sudo reboot
+
+# Create missing symlink
+cd /usr/lib/mysql/plugin/
+sudo ln -s /usr/local/lib/libmychem.so libmychem.so
+
+cd ~/mychem-code-0.9.3
+
+# Install Mychem extension
+mysql -u USER -p < src/mychemdb.sql
+
+# Test
+mysql -u USER -p
+use mychem;
+SELECT EXACTMASS(SMILES_TO_MOLECULE('c1ccccc1'));
+
+Should get ...
++-------------------------------------------+
+| EXACTMASS(SMILES_TO_MOLECULE('c1ccccc1')) |
++-------------------------------------------+
+|                                 78.046950 |
++-------------------------------------------+
+1 row in set (0.09 sec)
+
+ET VOILA !
+
