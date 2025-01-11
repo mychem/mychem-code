@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009-2014 by CNRS                                       *
- *   jerome.pansanel@iphc.cnrs.fr -- Project founder and lead developer    *
+ *   Copyright (C) 2009-2021 by CNRS and University of Strasbourg          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *

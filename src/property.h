@@ -29,25 +29,11 @@
 #ifndef __PROPERTY_H
 #define __PROPERTY_H
 
-#ifdef STANDARD
-/* STANDARD is defined, don't use any mysql functions */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef __WIN__
-typedef unsigned __int64 ulonglong;	/* Microsofts 64 bit types */
-typedef __int64 longlong;
-#else
-typedef unsigned long long ulonglong;
-typedef long long longlong;
-#endif /*__WIN__*/
-#else
-#include <my_global.h>
-#include <my_sys.h>
-#endif /* STANDARD */
 #include <mysql.h>
-#include <m_ctype.h>
-#include <m_string.h>		/* To get strmov() */
+#include <ctype.h>
 
 #ifdef HAVE_DLOPEN
 
@@ -130,7 +116,7 @@ void number_of_atoms_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of atoms
  */
-longlong number_of_atoms(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long number_of_atoms(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the number_of_heavy_atoms function.
@@ -157,7 +143,7 @@ void number_of_heavy_atoms_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of heavy atoms
  */
-longlong number_of_heavy_atoms(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long number_of_heavy_atoms(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the number_of_bonds function.
@@ -184,7 +170,7 @@ void number_of_bonds_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of bonds
  */
-longlong number_of_bonds(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long number_of_bonds(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the number_of_rotable_bonds function.
@@ -211,7 +197,7 @@ void number_of_rotable_bonds_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of rotable bonds
  */
-longlong number_of_rotable_bonds(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long number_of_rotable_bonds(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the total_charge function.
@@ -238,7 +224,7 @@ void total_charge_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The total charge of a molecule
  */
-longlong total_charge(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long total_charge(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the molformula function.
@@ -292,7 +278,7 @@ void number_of_acceptors_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of hydrogen-bond acceptors
  */
-longlong number_of_acceptors(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long number_of_acceptors(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the number_of_donors function.
@@ -319,7 +305,7 @@ void number_of_donors_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of hydrogen-bond donors
  */
-longlong number_of_donors(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long number_of_donors(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the molpsa function.
@@ -427,7 +413,7 @@ void is_2D_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return 1 if the molecule has 2D coordinates
  */
-longlong is_2D(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long is_2D(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the is_3D function.
@@ -454,7 +440,7 @@ void is_3D_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return 1 if a molecule has 3D coordinates.
  */
-longlong is_3D(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long is_3D(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the is_chiral function.
@@ -481,7 +467,7 @@ void is_chiral_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return 1 if the molecule is chiral
  */
-longlong is_chiral(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long is_chiral(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the number_of_rings function.
@@ -508,7 +494,7 @@ void number_of_rings_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of rings
  */
-longlong number_of_rings(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long number_of_rings(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 #endif /* HAVE_DLOPEN */
 

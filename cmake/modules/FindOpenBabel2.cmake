@@ -1,97 +1,65 @@
 # - Try to find OpenBabel2
 # Once done this will define
-#
-#  OPENBABEL2_FOUND - system has OpenBabel2
-#  OPENBABEL2_INCLUDE_DIR - the OpenBabel2 include directory
-#  OPENBABEL2_LIBRARIES - Link these to use OpenBabel2
+#"
+#  OPENBABEL2_FOUND - system has OpenBabel
+#  OPENBABEL2_INCLUDE_DIR - the OpenBabel3 include directory
+#  OPENBABEL2_LIBRARIES - Link these to use OpenBabel3
 
-# Copyright (c) 2006, Carsten Niehaus, <cniehaus at gmx.de>
-#
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
 #
-# Search for Open Babel2 libraries and includes
+# Search for Open Babel 2 libraries and includes
 #
 if (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
-
   # in cache already
   set(OPENBABEL2_FOUND TRUE)
-
 else (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
-if(NOT WIN32)
-  include(UsePkgConfig)
 
-  pkgconfig(openbabel-2.0 _obIncDir _obLinkDir _obLinkFlags _obCflags)
+    include(FindPkgConfig)
 
-  # query pkg-config asking for a openbabel >= 2.1.0
-  exec_program(${PKGCONFIG_EXECUTABLE} ARGS --atleast-version=2.1.0 openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
-  if(_return_VALUE STREQUAL "0")
-	set(OPENBABEL_MINI_FOUND TRUE)
-  endif(_return_VALUE STREQUAL "0")
-  message(STATUS "OPENBABEL_MINI_FOUND <${OPENBABEL_MINI_FOUND}>")
+    # query pkg-config asking for a openbabel-2.0
+    exec_program(${PKG_CONFIG_EXECUTABLE} ARGS openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
+    if(_return_VALUE STREQUAL "0")
+        set(OPENBABEL_MINI_FOUND TRUE)
+    endif(_return_VALUE STREQUAL "0")
+    message(STATUS "OPENBABEL_MINI_FOUND <${OPENBABEL_MINI_FOUND}>")
 
-  exec_program(${PKGCONFIG_EXECUTABLE} ARGS --variable=pkgincludedir openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _obPkgIncDir )
-  if (_obPkgIncDir)
-    set(_obIncDir "${_obPkgIncDir}")
-  endif (_obPkgIncDir)
-endif(NOT WIN32)
-  find_path(OPENBABEL2_INCLUDE_DIR openbabel/obconversion.h
-    ${_obIncDir}
-    /usr/local/include
-    /usr/include
-    ${GNUWIN32_DIR}/include
-    $ENV{OPENBABEL2_INCLUDE_DIR}
-  )
+    exec_program(${PKG_CONFIG_EXECUTABLE} ARGS --variable=pkgincludedir openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _obPkgIncDir )
+    if (_obPkgIncDir)
+        set(_obIncDir "${_obPkgIncDir}")
+    endif (_obPkgIncDir)
 
-  find_library(OPENBABEL2_LIBRARIES NAMES openbabel
-    PATHS
-    ${_obLinkDir}
-    /usr/lib
-    /usr/local/lib
-    ${GNUWIN32_DIR}/lib
-    $ENV{OPENBABEL2_LIBRARIES}
-  )
+    find_path(OPENBABEL2_INCLUDE_DIR openbabel/obconversion.h
+        PATHS
+        $ENV{OPENBABEL2_INCLUDE_DIR}
+        ${_obIncDir}
+        /usr/local/include/openbabel-2.0
+        /usr/include/openbabel-2.0
+    )
 
-  if(OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES AND OPENBABEL_MINI_FOUND)
-    set(OPENBABEL2_FOUND TRUE)
-  endif(OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES AND OPENBABEL_MINI_FOUND)
+    find_library(OPENBABEL2_LIBRARIES NAMES openbabel
+        PATHS
+        ${_obLinkDir}
+        $ENV{OPENBABEL2_LIBRARIES}
+        /usr/lib
+        /usr/local/lib
+    )
 
-  if (OPENBABEL2_FOUND)
-    if (NOT OPENBABEL2_FIND_QUIETLY)
-      message(STATUS "Found OpenBabel2: ${OPENBABEL2_LIBRARIES}")
-    endif (NOT OPENBABEL2_FIND_QUIETLY)
-  else (OPENBABEL2_FOUND)
+    if(OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES AND OPENBABEL_MINI_FOUND)
+        set(OPENBABEL2_FOUND TRUE)
+    endif(OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES AND OPENBABEL_MINI_FOUND)
+endif()
+
+if (OPENBABEL2_FOUND)
+    message(STATUS "Found OpenBabel2: ${OPENBABEL2_LIBRARIES}")
+else (OPENBABEL2_FOUND)
     if (OPENBABEL2_FIND_REQUIRED)
-      message(FATAL_ERROR "Could NOT find OpenBabel2")
+        message(FATAL_ERROR "Could NOT find OpenBabel3")
     endif (OPENBABEL2_FIND_REQUIRED)
-  endif (OPENBABEL2_FOUND)
-
-  mark_as_advanced(OPENBABEL2_INCLUDE_DIR OPENBABEL2_LIBRARIES)
+endif (OPENBABEL2_FOUND)
+mark_as_advanced(OPENBABEL2_INCLUDE_DIR OPENBABEL2_LIBRARIES)
 
 endif (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
 
-#
-# Search for Open Babel2 executable
-#
-IF( OPENBABEL2_EXECUTABLE )
-  # in cache already
-  SET( OPENBABEL2_EXECUTABLE_FOUND TRUE )
-
-ELSE( OPENBABEL2_EXECUTABLE )
-  FIND_PROGRAM(OPENBABEL2_EXECUTABLE
-               NAMES obabel
-               PATHS
-               [HKEY_CURRENT_USER\\SOFTWARE\\OpenBabel\ 2.0.2]
-               $ENV{OPENBABEL2_EXECUTABLE}
-  )
-
-  SET(OPENBABEL2_EXECUTABLE_FOUND)
-  IF(OPENBABEL2_EXECUTABLE)
-    SET(OPENBABEL2_EXECUTABLE_FOUND ON)
-
-  ENDIF(OPENBABEL2_EXECUTABLE)
-
-MESSAGE( STATUS "Open Babel Exe: ${OPENBABEL2_EXECUTABLE}" )
-
-ENDIF( OPENBABEL2_EXECUTABLE )
+mark_as_advanced(OPENBABEL2_INCLUDE_DIR OPENBABEL2_LIBRARIES)

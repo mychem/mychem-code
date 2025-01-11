@@ -28,25 +28,11 @@
 #ifndef __MOLMATCH_H
 #define __MOLMATCH_H
 
-#ifdef STANDARD
-/* STANDARD is defined, don't use any mysql functions */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef __WIN__
-typedef unsigned __int64 ulonglong;	/* Microsofts 64 bit types */
-typedef __int64 longlong;
-#else
-typedef unsigned long long ulonglong;
-typedef long long longlong;
-#endif /*__WIN__*/
-#else
-#include <my_global.h>
-#include <my_sys.h>
-#endif /* STANDARD */
 #include <mysql.h>
-#include <m_ctype.h>
-#include <m_string.h>		/* To get strmov() */
+#include <ctype.h>
 
 #ifdef HAVE_DLOPEN
 
@@ -75,7 +61,7 @@ void match_substruct_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return True if the molecule is a substructure
  */
-longlong match_substruct(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long match_substruct(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the substruct_atom_ids function.
@@ -157,7 +143,7 @@ void substruct_count_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of substructures
  */
-longlong substruct_count(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long substruct_count(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 /**
  * @short Initializes the bit_fp_and function.
@@ -238,7 +224,7 @@ void bit_fp_count_deinit(UDF_INIT *initid);
  * @param error Set to 1 if something goes fatally wrong
  * @return The number of bits
  */
-longlong bit_fp_count(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+long long bit_fp_count(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
 
 #endif /* HAVE_DLOPEN */
 

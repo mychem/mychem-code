@@ -1,14 +1,14 @@
 /**********************************************************************
 finger3.cpp: Fingerprints based on list of SMARTS patterns
 Copyright (C) 2005 Chris Morley
- 
+
 This file is part of the Open Babel project.
-For more information, see <http://openbabel.sourceforge.net/>
- 
+For more information, see <http://openbabel.org/>
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation version 2 of the License.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -43,12 +43,13 @@ private:
   };
   vector<pattern> _pats;
   int _bitcount;
+  string _version;
 
 protected:
   string _patternsfile;
 
 public:
-  PatternFP(const char* ID, const char* filename=NULL, 
+  PatternFP(const char* ID, const char* filename=NULL,
       bool IsDefault=false) : OBFingerprint(ID, IsDefault)
   {
     if(filename==NULL)
@@ -57,18 +58,29 @@ public:
       _patternsfile = filename;
   }
 
-///////////////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////////////
   virtual const char* Description()
   {
     static string desc;
+    //Read patterns file if it has not been done already,
+    //because we need _bitcount and _version updated
+
+    // _bitcount and _version are available only after the datafile has been parsed.
+    // This is a burden on normal operation (Description() gets called on startup from OBDefine),
+    // so the secondline is present only after the fingerprint has been used.
+    // the
+    string secondline;
+    if(!_pats.empty())
+      secondline = "\n" + toString(_bitcount) + " bits. Datafile version = " +  _version;
     desc = "SMARTS patterns specified in the file " + _patternsfile
+      + secondline
       + "\nPatternFP is definable";
     return (desc.c_str());
   }
 
 //////////////////////////////////////////////////////////////////////////////
-  //Each bit represents a single substructure; no need for confirmation when substructure searching
-  virtual unsigned int Flags() { return FPT_UNIQUEBITS;}; 
+  //Each bit represents a single substructure
+  virtual unsigned int Flags() { return FPT_UNIQUEBITS;};
 
 ///////////////////////////////////////////////////////////////////////////////
   virtual PatternFP* MakeInstance(const std::vector<std::string>& textlines)
@@ -76,17 +88,20 @@ public:
     return new PatternFP(textlines[1].c_str(),textlines[2].c_str());
   }
 
-//////////////////////////////////////////////////////////////////////////////// 
-  virtual bool GetFingerprint(OBBase* pOb, vector<unsigned int>&fp, int foldbits) 
+////////////////////////////////////////////////////////////////////////////////
+  virtual bool GetFingerprint(OBBase* pOb, vector<unsigned int>&fp, int foldbits)
   {
     OBMol* pmol = dynamic_cast<OBMol*>(pOb);
     if(!pmol)
       return false;
-    
+
+    //This fingerprint is constructed from a molecule with no explicit hydrogens.
+    pmol->DeleteHydrogens();
+
     unsigned int n;
     //Read patterns file if it has not been done already
     if(_pats.empty())
-      ReadPatternFile();
+      ReadPatternFile(_version);
 
     //Make fp size the smallest power of two to contain the patterns
     n=Getbitsperint();
@@ -112,13 +127,13 @@ public:
            So with a pattern with numbits = 4 and numoccurences = 2,
            the groups would be 1, 1, and 2 bits.
            A molecule with
-              1 match to the pattern would give 0011 
-              2 matches to the pattern would give 0111 
-              3 or more matches to the pattern would give 1111 
+              1 match to the pattern would give 0011
+              2 matches to the pattern would give 0111
+              3 or more matches to the pattern would give 1111
         */
-        int numMatches = ppat->obsmarts.GetUMapList().size();       
+        int numMatches = ppat->obsmarts.GetUMapList().size();
         int num =  ppat->numbits, div = ppat->numoccurrences+1, ngrp;
- 
+
         int i = n;
         while(num)
         {
@@ -138,13 +153,13 @@ public:
       Fold(fp, foldbits);
     return true;
   }
-  
+
   /////////////////////////////////////////////////////////////////////
-  bool ReadPatternFile()
+  bool ReadPatternFile(string& ver)
   {
     //Reads three types of file. See below
     ifstream ifs;
-	  stringstream errorMsg; 
+	  stringstream errorMsg;
 
     if (OpenDatafile(ifs, _patternsfile).length() == 0)
     {
@@ -157,8 +172,9 @@ public:
     if(!getline(ifs, line)) //first line
       return false;
     bool smartsfirst = (Trim(line)=="#Comments after SMARTS");
-    
+
     _bitcount=0;
+    bool indata=false;
     do
     {
       if(Trim(line).size()>0 && line[0]!='#')
@@ -167,7 +183,7 @@ public:
         p.numbits=1; p.numoccurrences=0; //default values
         p.bitindex = _bitcount;
         istringstream ss(line);
-
+        indata = true;
         if(smartsfirst)
         {
           if(isdigit(line[0]))
@@ -198,8 +214,29 @@ public:
         _pats.push_back(p);
         _bitcount += p.numbits;
       }
+      else if(!indata)
+      {
+        //Find version number
+        string::size_type pos = line.find("Version");
+        if(pos!=string::npos)
+          pos+=8;
+        else if(line.find("Extracted from RDKit")!=string::npos)
+        {
+          pos=20;
+          while((pos=line.find('r',pos))!=string::npos)
+            if(isdigit(line[++pos]))
+              break;
+        }
+        if(pos!=string::npos)
+        {
+          ver=line.substr(pos) + ' ';//space fixes bug in while() when number at end of line
+          pos=1;
+          while(isdigit(ver[++pos]));
+          ver.erase(pos);
+        }
+      }
     }while(getline(ifs,line));
- 
+
     if (ifs)
       ifs.close();
     return true;
@@ -221,9 +258,10 @@ public:
         num -= ngrp;
         if(GetBit(fp, n) == bSet)
         {
-          ss << '\t' << ppat->description;
+          ss << ppat->description;
           if(div>0)
             ss << '*' << div+1;
+          ss << '\t' ;
           break; //ignore the bits signifying a smaller number of occurrences
         }
         n += ngrp;
@@ -234,7 +272,7 @@ public:
   }
 
 ///////////////////////////////////////////////////////////////////////////////////
-  bool ParseRDKitFormat(istringstream& ss, pattern& p) 
+  bool ParseRDKitFormat(istringstream& ss, pattern& p)
   {
     //rdkit format, e.g.
     //  14:('[S,s]-[S,s]',0), # S-S
@@ -268,7 +306,6 @@ public:
 //***********************************************
 //Make a global instance
 PatternFP FP3PatternFP("FP3");
-
 PatternFP FP4PatternFP("FP4", "SMARTS_InteLigand.txt");
 //***********************************************
 
