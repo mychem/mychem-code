@@ -42,9 +42,9 @@ jobs:
         sudo apt-get install -y cmake libmysqlclient-dev libopenbabel-dev build-essential cmake mysql-server
 
     - name: Start MySQL
-        run: |
-          sudo service mysql start
-          sudo mysql -u root -e "CREATE USER 'github'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'github'@'localhost'; FLUSH PRIVILEGES;"
+      run: |
+        sudo service mysql start
+        sudo mysql -u root -e "CREATE USER 'github'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'github'@'localhost'; FLUSH PRIVILEGES;"
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
