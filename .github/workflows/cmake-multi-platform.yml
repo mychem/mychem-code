@@ -31,14 +31,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: install compiler
+    - name: Install compiler
       run: |
         sudo apt-get update
         sudo apt-get install -y ${{ matrix.compiler.cc }}
         sudo apt-get install -y ${{ matrix.compiler.cxx }}
-    - name: install dependencies
+
+    - name: Install dependencies
       run: |
-        sudo apt-get install -y cmake libmysqlclient-dev openbabel-dev
+        sudo apt-get install -y cmake libmysqlclient-dev libopenbabel-dev build-essential cmake mysql-server
+
+    - name: Start MySQL
+        run: |
+          sudo service mysql start
+          sudo mysql -u root -e "CREATE USER 'github'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'github'@'localhost'; FLUSH PRIVILEGES;"
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
@@ -55,6 +61,8 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DMY_HOST=localhost
+        -DMY_USER=github
         -S ${{ github.workspace }}
 
     - name: Build
