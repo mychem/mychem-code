@@ -5,7 +5,7 @@ set( MYCHEM_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/" )
 #
 include_directories(
     ${MYSQL_INCLUDE_DIR} 
-    ${OPENBABEL2_INCLUDE_DIR}
+    ${OPENBABEL_INCLUDE_DIR}
     ${CMAKE_BINARY_DIR}/include 
     ${CMAKE_SOURCE_DIR}/include 
 )
