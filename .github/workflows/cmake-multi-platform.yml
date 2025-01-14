@@ -59,7 +59,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DMY_HOST=localhost
         -DMY_USER=root
-        -DMY_PASSWORD=root
+        -DMY_PASSWD=root
         -S ${{ github.workspace }}
 
     - name: Build
