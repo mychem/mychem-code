@@ -53,7 +53,7 @@ bool MySQLHandler::connect(string host, string user, string passwd, string db)
     cout << "Error: could not connect to MySQL!\n" << mysql_error(&_mysql) << endl;
     return false;
   }
-  my_bool reconnect = 1;
+  bool reconnect = 1;
   mysql_options(&_mysql, MYSQL_OPT_RECONNECT, &reconnect);
 
   return true;
