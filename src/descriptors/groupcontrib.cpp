@@ -24,10 +24,15 @@ GNU General Public License for more details.
 #include <openbabel/babelconfig.h>
 #include <vector>
 #include <utility>
+#include <cstdlib>
 #include <openbabel/mol.h>
+#include <openbabel/atom.h>
+#include <openbabel/oberror.h>
 #include <openbabel/parsmart.h>
+#include <openbabel/bitvec.h>
 #include <openbabel/groupcontrib.h>
 #include <openbabel/locale.h>
+#include <openbabel/elements.h>
 
 using namespace std;
 
@@ -87,7 +92,7 @@ namespace OpenBabel
       else
       {
         delete sp;
-        sp = NULL;
+        sp = nullptr;
         obErrorLog.ThrowError(__FUNCTION__, " Could not parse SMARTS from contribution data file", obInfo);
 
         // return the locale to the original one
@@ -152,9 +157,9 @@ namespace OpenBabel
       if (i->first->Match(tmpmol)) {
         _mlist = i->first->GetMapList();
         for (j = _mlist.begin();j != _mlist.end();++j) {
-          if (tmpmol.GetAtom((*j)[0])->IsHydrogen())
+          if (tmpmol.GetAtom((*j)[0])->GetAtomicNum() == OBElements::Hydrogen)
             continue;
-          int Hcount = tmpmol.GetAtom((*j)[0])->GetValence() - tmpmol.GetAtom((*j)[0])->GetHvyValence();
+          int Hcount = tmpmol.GetAtom((*j)[0])->GetExplicitDegree() - tmpmol.GetAtom((*j)[0])->GetHvyDegree();
           hydrogenValues[(*j)[0] - 1] = i->second * Hcount;
           seenHydrogen.SetBitOn((*j)[0]);
           if (_debug)
@@ -169,7 +174,7 @@ namespace OpenBabel
     if (_debug)
       debugMessage << "  Final contributions:\n";
     for (unsigned int index = 0; index < tmpmol.NumAtoms(); index++) {
-      if (tmpmol.GetAtom(index + 1)->IsHydrogen())
+      if (tmpmol.GetAtom(index + 1)->GetAtomicNum() == OBElements::Hydrogen)
         continue;
       total += atomValues[index];
       total += hydrogenValues[index];
@@ -177,7 +182,7 @@ namespace OpenBabel
         debugMessage << index+1 << " = " << atomValues[index] << " ";
         if (!seenHeavy.BitIsSet(index + 1)) debugMessage << "un";
         debugMessage << "matched...";
-        int Hcount = tmpmol.GetAtom(index + 1)->GetValence() - tmpmol.GetAtom(index + 1)->GetHvyValence();
+        int Hcount = tmpmol.GetAtom(index + 1)->GetExplicitDegree() - tmpmol.GetAtom(index + 1)->GetHvyDegree();
         debugMessage << "   " << Hcount << " hydrogens = " << hydrogenValues[index] << " ";
         if (!seenHydrogen.BitIsSet(index + 1)) debugMessage << "un";
         debugMessage << "matched\n";
