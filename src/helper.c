@@ -32,7 +32,7 @@
 
 #ifdef HAVE_DLOPEN
 
-my_bool mychem_version_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool mychem_version_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 0) {
     strcpy(message, "Wrong number of arguments: MYCHEM_VERSION() requires no argument");
@@ -71,7 +71,7 @@ char *mychem_version(UDF_INIT *initid, UDF_ARGS *args __attribute__((unused)), c
   return initid->ptr;
 }
 
-my_bool openbabel_version_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool openbabel_version_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 0) {
     strcpy(message, "Wrong number of arguments: OPENBABEL_VERSION() requires no argument");
@@ -124,7 +124,7 @@ char *openbabel_version(UDF_INIT *initid, UDF_ARGS *args __attribute__((unused))
   return initid->ptr;
 }
 
-my_bool inchi_version_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool inchi_version_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 0) {
     strcpy(message, "Wrong number of arguments: INCHI_VERSION() requires no argument");

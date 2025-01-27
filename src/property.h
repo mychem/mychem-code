@@ -44,7 +44,7 @@
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool molweight_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool molweight_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by molweight_init().
@@ -71,7 +71,7 @@ double molweight(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool exactmass_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool exactmass_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by exactmass_init().
@@ -98,7 +98,7 @@ double exactmass(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool number_of_atoms_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool number_of_atoms_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by number_of_atoms_init().
@@ -125,7 +125,7 @@ long long number_of_atoms(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char 
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool number_of_heavy_atoms_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool number_of_heavy_atoms_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by number_of_heavy_atoms_init().
@@ -152,7 +152,7 @@ long long number_of_heavy_atoms(UDF_INIT *initid, UDF_ARGS *args, char *is_null,
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool number_of_bonds_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool number_of_bonds_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by number_of_bonds_init().
@@ -179,7 +179,7 @@ long long number_of_bonds(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char 
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool number_of_rotable_bonds_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool number_of_rotable_bonds_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by number_of_rotable_bonds_init().
@@ -206,7 +206,7 @@ long long number_of_rotable_bonds(UDF_INIT *initid, UDF_ARGS *args, char *is_nul
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool total_charge_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool total_charge_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by total_charge_init().
@@ -233,7 +233,7 @@ long long total_charge(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *er
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool molformula_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool molformula_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by molformula_init().
@@ -260,7 +260,7 @@ char *molformula(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool number_of_acceptors_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool number_of_acceptors_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by number_of_acceptors_init().
@@ -287,7 +287,7 @@ long long number_of_acceptors(UDF_INIT *initid, UDF_ARGS *args, char *is_null, c
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool number_of_donors_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool number_of_donors_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by number_of_donors_init().
@@ -314,7 +314,7 @@ long long number_of_donors(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool molpsa_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool molpsa_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by molpsa_init().
@@ -341,7 +341,7 @@ double molpsa(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool molmr_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool molmr_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by molmr_init().
@@ -368,7 +368,7 @@ double molmr(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool mollogp_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool mollogp_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by mollogp_init().
@@ -395,7 +395,7 @@ double mollogp(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool is_2D_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool is_2D_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by is_2D_init().
@@ -422,7 +422,7 @@ long long is_2D(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool is_3D_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool is_3D_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by is_3D_init().
@@ -449,7 +449,7 @@ long long is_3D(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool is_chiral_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool is_chiral_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by is_chiral_init().
@@ -476,7 +476,7 @@ long long is_chiral(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool number_of_rings_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool number_of_rings_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by number_of_rings_init().

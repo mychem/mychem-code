@@ -43,7 +43,7 @@
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool add_hydrogens_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool add_hydrogens_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by add_hydrogens_init().
@@ -70,7 +70,7 @@ char *add_hydrogens(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lon
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool remove_hydrogens_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool remove_hydrogens_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by remove_hydrogens_init().
@@ -97,7 +97,7 @@ char *remove_hydrogens(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
  * @param message The error message that should be passed to the user on fail
  * @return True if an error is raised during the initialization
  */
-my_bool strip_salts_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+bool strip_salts_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
 /**
  * @short Should free all resources allocated by strip_salts_init().
