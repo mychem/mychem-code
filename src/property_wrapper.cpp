@@ -464,11 +464,9 @@ long long int isChiral(const char *molecule)
         return 1;
       }
     }
-
-    return 0;
-
   }
 
+  return 0;
 }
 
 long long int getRingCount(const char *molecule)
