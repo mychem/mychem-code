@@ -36,6 +36,11 @@ jobs:
       run: |
         sudo apt-get install -y cmake libmysqlclient-dev libopenbabel-dev build-essential cmake
 
+    # Stop apparmor
+    - name: Stop apparmor
+      run: |
+        sudo systemctl stop apparmor.service
+
     # MySQL server is already installed and configured on Ubuntu OS.
     # See: https://github.com/actions/runner-images/tree/main/images/ubuntu
     - name: Start MySQL
@@ -67,10 +72,14 @@ jobs:
       run: make -C ${{ steps.strings.outputs.build-output-dir }} && sudo make install -C ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Load functions
-      run: sudo mysql -uroot -proot < src/mychemdb.sql
+      run: |
+        sudo mysql -uroot -proot < src/mychemdb.sql
+        sudo systemctl restart mysql.service
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: |
+        sudo journalctl -n 100
+        sudo ctest --build-config ${{ matrix.build_type }}
