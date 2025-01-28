@@ -64,7 +64,7 @@ jobs:
 
     - name: Build & install
       # Build and install Mychem
-      run: make -C ${{ steps.strings.outputs.build-output-dir }} && make install -C ${{ steps.strings.outputs.build-output-dir }}
+      run: make -C ${{ steps.strings.outputs.build-output-dir }} && sudo make install -C ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Load functions
       run: sudo mysql -uroot -proot < src/mychemdb.sql
