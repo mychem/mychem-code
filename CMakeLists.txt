@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.10.0)
 
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
@@ -16,7 +16,8 @@ endif(COMMAND cmake_policy)
 # We will define two other build types: Debug and Release.
 # These names are case-insensitive i.e. you can do -DCMAKE_BUILD_TYPE=debug
 if (NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE RelWithDebInfo)
+   message( "Build Type not set, defaulting to Debug..." )
+   set(CMAKE_BUILD_TYPE Debug)
 endif (NOT CMAKE_BUILD_TYPE)
 
 message(STATUS "The build type is ${CMAKE_BUILD_TYPE}")
@@ -126,25 +127,20 @@ endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 # Compiler specific settings
 #-----------------------------------------------------------------------------
 
-if (MSVC)
-endif (MSVC)
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
+  set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wno-long-long -Wundef -Wcast-align -Werror-implicit-function-declaration -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Wmissing-format-attribute -fno-common")
+  set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wnon-virtual-dtor -Wno-long-long -ansi -Wundef -Wcast-align -Wchar-subscripts -Wall -W -Wpointer-arith -Wformat-security -fno-check-new -fno-common")
+endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 
+# The compilation has only been tested with GCC.
 if (CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
-  set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG -DQT_NO_DEBUG")
-  set(CMAKE_CXX_FLAGS_DEBUG          "-g -O2 -fno-reorder-blocks -fno-schedule-insns -fno-inline")
-  set(CMAKE_CXX_FLAGS_DEBUGFULL      "-g3 -fno-inline")
-  set(CMAKE_CXX_FLAGS_PROFILE        "-g3 -fno-inline -ftest-coverage -fprofile-arcs")
-  set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g -std=gnu89")
-  set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG -DQT_NO_DEBUG")
-  set(CMAKE_C_FLAGS_DEBUG            "-g -O2 -fno-reorder-blocks -fno-schedule-insns -fno-inline")
-  set(CMAKE_C_FLAGS_DEBUGFULL        "-g3 -fno-inline")
-  set(CMAKE_C_FLAGS_PROFILE          "-g3 -fno-inline -ftest-coverage -fprofile-arcs")
+  set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -g")
+  set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -g3 -fno-inline -fno-reorder-blocks -fno-schedule-insns")
+  set(CMAKE_C_FLAGS_RELEASE          "${CMAKE_C_FLAGS_RELEASE} -O3 -DNDEBUG")
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO   "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O2 -g")
+  set(CMAKE_C_FLAGS_DEBUG            "${CMAKE_C_FLAGS_DEBUG} -g -O2 -fno-reorder-blocks -fno-schedule-insns -fno-inline")
 
-  if (CMAKE_SYSTEM_NAME MATCHES Linux)
-    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-long-long -std=iso9899:1990 -Wundef -Wcast-align -Werror-implicit-function-declaration -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Wmissing-format-attribute -fno-common")
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnon-virtual-dtor -Wno-long-long -ansi -Wundef -Wcast-align -Wchar-subscripts -Wall -W -Wpointer-arith -Wformat-security -fno-check-new -fno-common")
-  endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 
   # get the gcc version
   exec_program(${CMAKE_C_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
@@ -156,22 +152,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
    endif (NOT _gcc_version)
 
 endif (CMAKE_COMPILER_IS_GNUCXX)
-
-if (CMAKE_C_COMPILER MATCHES "icc")
-
-   # Select flags.
-   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
-   set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG -DQT_NO_DEBUG")
-   set(CMAKE_CXX_FLAGS_DEBUG          "-O2 -g -fno-inline -noalign")
-   set(CMAKE_CXX_FLAGS_DEBUGFULL      "-g -fno-inline -noalign")
-   set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g")
-   set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG -DQT_NO_DEBUG")
-   set(CMAKE_C_FLAGS_DEBUG            "-O2 -g -fno-inline -noalign")
-   set(CMAKE_C_FLAGS_DEBUGFULL        "-g -fno-inline -noalign")
-
-   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -ansi -Wall -w1 -Wpointer-arith -fno-common")
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -Wall -w1 -Wpointer-arith -fno-exceptions -fno-common")
-endif (CMAKE_C_COMPILER MATCHES "icc")
 
 
 #-----------------------------------------------------------------------------
