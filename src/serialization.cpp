@@ -292,6 +292,9 @@ bool unserializeOBMol(OBBase* pOb, const char *serializedInput, bool stereoEnabl
     }
 
     bool ok = OBKekulize(&mol);
+    if (!ok) {
+      return false;
+    }
   }
 
   return true;

@@ -67,30 +67,45 @@ int main(int argc, char **argv)
           if (count < argc) {
             host = argv[count];
             break;
+          } else {
+            arg_error();
+            exit(1);
           }
         case 'u':
           ++count;
           if (count < argc) {
             user = argv[count];
             break;
+          } else {
+            arg_error();
+            exit(1);
           }
         case 'p':
           ++count;
           if (count < argc) {
             passwd = argv[count];
             break;
+          } else {
+            arg_error();
+            exit(1);
           }
 	case 'b':
 	  ++count;
 	  if (count < argc) {
 	    db = argv[count];
 	    break;
+          } else {
+            arg_error();
+            exit(1);
 	  }
 	case 'd':
 	  ++count;
 	  if (count < argc) {
 	    data_dir = argv[count];
 	    break;
+          } else {
+            arg_error();
+            exit(1);
 	  }
         default:
           arg_error();
