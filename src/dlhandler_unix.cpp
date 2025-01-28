@@ -30,7 +30,7 @@
 #include <dlfcn.h>
 #include <cstdio>
 
-#define OBLIBRARY "libopenbabel.so.5"
+#define OBLIBRARY "libopenbabel.so.7"
 
 using namespace std;
 

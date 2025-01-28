@@ -36,11 +36,11 @@ typedef struct {
 typedef struct
 {
   unsigned int idx;
-  int hybridization;
+  unsigned short hybridization;
   unsigned char atomicnum;
   unsigned short isotope;
-  char formalcharge;
-  unsigned char spinmultiplicity;
+  short formalcharge;
+  short spinmultiplicity;
   unsigned char aromatic;
 } _ATOM;
 
@@ -48,7 +48,8 @@ typedef struct
 {
   unsigned int beginidx;
   unsigned int endidx;
-  unsigned char order;
+  /* Bond order (1, 2, 3, 5=aromatic) */
+  char order;
   unsigned char aromatic;
 } _BOND;
 

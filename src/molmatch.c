@@ -35,7 +35,7 @@
 
 #ifdef HAVE_DLOPEN
 
-my_bool match_substruct_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool match_substruct_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 2) {
     strcpy(message, "Wrong number of arguments: MATCH_SUBSTRUCT() requires two arguments");
@@ -96,7 +96,7 @@ long long match_substruct(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *ar
   return match_bool;
 }
 
-my_bool substruct_atom_ids_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool substruct_atom_ids_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 2) {
     strcpy(message, "Wrong number of arguments: SUBSTRUCT_ATOM_IDS() requires two arguments");
@@ -177,7 +177,7 @@ char *substruct_atom_ids(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigne
   return initid->ptr;
 }
 
-my_bool tanimoto_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool tanimoto_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 2) {
     strcpy(message, "Wrong number of arguments: TANIMOTO() requires two arguments");
@@ -267,7 +267,7 @@ double tanimoto(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *args, char *
   return (double) andbits / (double) orbits;
 }
 
-my_bool substruct_count_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool substruct_count_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 2) {
     strcpy(message, "Wrong number of arguments: SUBSTRUCT_COUNT() requires two arguments");
@@ -324,7 +324,7 @@ long long substruct_count(UDF_INIT *initid __attribute__((unused)), UDF_ARGS *ar
   return number_of_substructure;
 }
 
-my_bool bit_fp_and_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool bit_fp_and_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 2) {
     strcpy(message, "Wrong number of arguments: BIT_FP_AND() requires two arguments");
@@ -414,7 +414,7 @@ char *bit_fp_and(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *
   return initid->ptr;
 }
 
-my_bool bit_fp_or_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool bit_fp_or_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 2) {
     strcpy(message, "Wrong number of arguments: BIT_FP_OR() requires two arguments");
@@ -504,7 +504,7 @@ char *bit_fp_or(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *l
   return initid->ptr;
 }
 
-my_bool bit_fp_count_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool bit_fp_count_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 1) {
     strcpy(message, "Wrong number of arguments: BIT_FP_COUNT() requires one argument");

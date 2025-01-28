@@ -25,7 +25,12 @@
  * @author Jerome Pansanel <jerome.pansanel@iphc.cnrs.fr>
 */
 
+#include <cstring>
 #include <mychem/serialization.h>
+#include <openbabel/atom.h>
+#include <openbabel/bond.h>
+#include <openbabel/kekulize.h>
+#include <openbabel/obiter.h>
 #include <openbabel/stereo/stereo.h>
 #include <openbabel/stereo/tetrahedral.h>
 #include <openbabel/stereo/cistrans.h>
@@ -65,8 +70,6 @@ char *serializeOBMol(OBMol &mol) {
   _BOND *bondptr;
   _STEREO *stereoptr;
 
-  //mol.Kekulize();
-
   memset(retval,0x0,totalsize);
 
   unsigned int *uintptr = (unsigned int*) retval;
@@ -92,10 +95,10 @@ char *serializeOBMol(OBMol &mol) {
   FOR_ATOMS_OF_MOL(atom, mol) {
     atomptr->idx = atom->GetIdx();
     atomptr->hybridization = atom->GetHyb();
-    atomptr->atomicnum = (unsigned char) atom->GetAtomicNum();
-    atomptr->formalcharge = (char) atom->GetFormalCharge();
-    atomptr->isotope = (unsigned short) atom->GetIsotope();
-    atomptr->spinmultiplicity = (unsigned char) atom->GetSpinMultiplicity();
+    atomptr->atomicnum = atom->GetAtomicNum();
+    atomptr->formalcharge = atom->GetFormalCharge();
+    atomptr->isotope = atom->GetIsotope();
+    atomptr->spinmultiplicity = atom->GetSpinMultiplicity();
     atomptr->aromatic = atom->IsAromatic() ? 1 : 0;
 
     ++atomptr;
@@ -107,7 +110,7 @@ char *serializeOBMol(OBMol &mol) {
     FOR_BONDS_OF_MOL(bond, mol) {
       bondptr->beginidx = bond->GetBeginAtomIdx();
       bondptr->endidx = bond->GetEndAtomIdx();
-      bondptr->order = (unsigned char) bond->GetBondOrder();
+      bondptr->order = bond->GetBondOrder();
       bondptr->aromatic = bond->IsAromatic() ? 1 : 0;
 
       ++bondptr;
@@ -162,13 +165,12 @@ char *serializeOBMol(OBMol &mol) {
 bool unserializeOBMol(OBBase* pOb, const char *serializedInput, bool stereoEnabled)
 {
   OBMol* pmol = pOb->CastAndClear<OBMol>();
-  map<OBAtom*,OBChiralData*> _mapcd;
   OBMol &mol = *pmol;
-  _mapcd.clear();
-  bool chiralWatch=false;
   unsigned int i,natoms,nbonds,nstereo;
 
   unsigned int *intptr = (unsigned int*) serializedInput;
+
+  bool needs_kekulization = false;
 
   ++intptr;
 
@@ -207,10 +209,6 @@ bool unserializeOBMol(OBBase* pOb, const char *serializedInput, bool stereoEnabl
       return false;
     }
 
-    if (chiralWatch) {
-      // fill the map with data for each chiral atom
-      _mapcd[mol.GetAtom(i)] = new OBChiralData;
-    }
     atom.Clear();
 
     ++atomptr;
@@ -235,6 +233,7 @@ bool unserializeOBMol(OBBase* pOb, const char *serializedInput, bool stereoEnabl
 
     if (bondptr->aromatic != 0) {
       flags |= OB_AROMATIC_BOND;
+      needs_kekulization = true;
     }
 
     if (!mol.AddBond(start,end,order,flags)) {
@@ -281,9 +280,19 @@ bool unserializeOBMol(OBBase* pOb, const char *serializedInput, bool stereoEnabl
     }
     mol.SetChiralityPerceived();
   }
- 
-  mol.SetAromaticPerceived();
-  mol.SetKekulePerceived();
+
+  // Kekulization is necessary if an aromatic bond is present
+  if (needs_kekulization) {
+    mol.SetAromaticPerceived();
+    FOR_BONDS_OF_MOL(bond, mol) {
+      if (bond->IsAromatic()) {
+        bond->GetBeginAtom()->SetAromatic();
+        bond->GetEndAtom()->SetAromatic();
+      }
+    }
+
+    bool ok = OBKekulize(&mol);
+  }
 
   return true;
 }

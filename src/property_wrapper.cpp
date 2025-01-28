@@ -35,6 +35,7 @@
 #include <openbabel/obconversion.h>
 #include <openbabel/descriptor.h>
 #include <openbabel/groupcontrib.h>
+#include <openbabel/obiter.h>
 #include "descriptors/groupcontrib.cpp"
 #include <sstream>
 
@@ -443,12 +444,10 @@ long long int isChiral(const char *molecule)
   string inString(molecule);
   istringstream inStream(inString);
 
-  long long int Bool = 0;
-
   LibHandler ob_lib;
 
   if (!ob_lib.isLoaded()) {
-    return Bool;
+    return 0;
   }
 
   OBMol mol;
@@ -456,14 +455,20 @@ long long int isChiral(const char *molecule)
 
   if (conv.SetInFormat(MOLECULE_TYPE)) {
     conv.Read(&mol, &inStream);
-    mol.FindChiralCenters();
 
-    if (mol.IsChiral()) {
-      Bool = 1;
+    FOR_ATOMS_OF_MOL(atom, mol) {
+      if ((atom->GetAtomicNum() == OBElements::Carbon || atom->GetAtomicNum() == OBElements::Nitrogen)
+          && atom->GetHvyDegree() > 2
+          && atom->IsChiral()) {
+
+        return 1;
+      }
     }
+
+    return 0;
+
   }
 
-  return Bool;
 }
 
 long long int getRingCount(const char *molecule)

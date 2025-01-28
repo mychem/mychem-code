@@ -32,7 +32,7 @@
 
 #ifdef HAVE_DLOPEN
 
-my_bool add_hydrogens_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool add_hydrogens_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 1) {
     strcpy(message, "Wrong number of arguments: ADD_HYDROGENS() requires one argument");
@@ -105,7 +105,7 @@ char *add_hydrogens(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lon
   return initid->ptr;
 }
 
-my_bool remove_hydrogens_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool remove_hydrogens_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 1) {
     strcpy(message, "Wrong number of arguments: REMOVE_HYDROGENS() requires one argument");
@@ -177,7 +177,7 @@ char *remove_hydrogens(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
   return initid->ptr;
 }
 
-my_bool strip_salts_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+bool strip_salts_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (args->arg_count != 1) {
     strcpy(message, "Wrong number of arguments: REMOVE_HYDROGENS() requires one argument");
