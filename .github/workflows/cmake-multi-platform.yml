@@ -76,6 +76,11 @@ jobs:
         sudo mysql -uroot -proot < src/mychemdb.sql
         sudo systemctl restart mysql.service
 
+    - name: Update apparmor configuration
+      run: |
+        sudo sh -c "echo '/usr/share/openbabel/** r,' > /etc/apparmor.d/local/usr.sbin.mysqld"
+        sudo sh -c "cat /etc/apparmor.d/usr.sbin.mysqld  | apparmor_parser -r"
+
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
