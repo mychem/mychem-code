@@ -25,12 +25,11 @@
  * @author Jerome Pansanel <jerome.pansanel@iphc.cnrs.fr>
  */
 
+#include <mychem/config.h>
 #include <mychem/dlhandler.h>
 
 #include <dlfcn.h>
 #include <cstdio>
-
-#define OBLIBRARY "libopenbabel.so.7"
 
 using namespace std;
 
@@ -39,7 +38,7 @@ void *LibHandler::lib_handler = NULL;
 LibHandler::LibHandler()
 {
   if (!lib_handler) {
-    lib_handler = dlopen(OBLIBRARY, RTLD_LAZY | RTLD_GLOBAL);
+    lib_handler = dlopen(OB_LIBRARY_FILE, RTLD_LAZY | RTLD_GLOBAL);
   }
 }
 

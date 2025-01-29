@@ -4,6 +4,7 @@
 #  OPENBABEL_FOUND - system has OpenBabel
 #  OPENBABEL_INCLUDE_DIR - the OpenBabel include directory
 #  OPENBABEL_LIBRARIES - Link these to use OpenBabel
+#  OPENBABEL_LIBRARY_FILE - Name of the OpenBabel library file
 
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -11,13 +12,14 @@
 #
 # Search for Open Babel libraries and includes
 #
-if (OPENBABEL_INCLUDE_DIR AND OPENBABEL_LIBRARIES)
+if(OPENBABEL_INCLUDE_DIR AND OPENBABEL_LIBRARIES AND OPENBABEL_LIBRARY_FILE)
   # in cache already
   set(OPENBABEL_FOUND TRUE)
-else (OPENBABEL_INCLUDE_DIR AND OPENBABEL_LIBRARIES)
-
-    include(FindPkgConfig)
-
+else(OPENBABEL_INCLUDE_DIR AND OPENBABEL_LIBRARIES AND OPENBABEL_LIBRARY_FILE)
+    if(NOT PKG_CONFIG_FOUND)
+      include(CMakeFindDependencyMacro)
+      find_dependencu(PkgConfig)
+    endif()
     # query pkg-config asking for a openbabel-3
     exec_program(${PKG_CONFIG_EXECUTABLE} ARGS openbabel-3 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
     if(_return_VALUE STREQUAL "0")
@@ -48,8 +50,9 @@ else (OPENBABEL_INCLUDE_DIR AND OPENBABEL_LIBRARIES)
 
     if(OPENBABEL_INCLUDE_DIR AND OPENBABEL_LIBRARIES AND OPENBABEL_MINI_FOUND)
         set(OPENBABEL_FOUND TRUE)
+        get_filename_component(OPENBABEL_LIBRARY_FILE ${OPENBABEL_LIBRARIES} NAME)
     endif(OPENBABEL_INCLUDE_DIR AND OPENBABEL_LIBRARIES AND OPENBABEL_MINI_FOUND)
-endif()
+endif(OPENBABEL_INCLUDE_DIR AND OPENBABEL_LIBRARIES AND OPENBABEL_LIBRARY_FILE)
 
 if (OPENBABEL_FOUND)
     message(STATUS "Found OpenBabel: ${OPENBABEL_LIBRARIES}")
@@ -58,4 +61,4 @@ else (OPENBABEL_FOUND)
         message(FATAL_ERROR "Could NOT find OpenBabel")
     endif (OPENBABEL_FIND_REQUIRED)
 endif (OPENBABEL_FOUND)
-mark_as_advanced(OPENBABEL_INCLUDE_DIR OPENBABEL_LIBRARIES)
+mark_as_advanced(OPENBABEL_INCLUDE_DIR OPENBABEL_LIBRARIES OPENBABEL_LIBRARY_FILE)
