@@ -1,4 +1,5 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
+# This starter workflow is for a CMake project running on multiple platforms.
+# There is a different starter workflow if you just want a single platform.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: CMake on multiple platforms
 
@@ -13,10 +14,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      # Set fail-fast to false to ensure that feedback is delivered for all
+      # matrix combinations. Consider changing this to true when your
+      # workflow is stable.
       fail-fast: false
 
-      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.)
+      # customize the build_type list.
       matrix:
         os: [ubuntu-20.04,ubuntu-22.04,ubuntu-24.04]
         build_type: [Release]
@@ -36,28 +40,24 @@ jobs:
       run: |
         sudo apt-get install -y cmake libmysqlclient-dev libopenbabel-dev build-essential cmake
 
-    # Stop apparmor
-    - name: Stop apparmor
-      run: |
-        sudo systemctl stop apparmor.service
-
-    # MySQL server is already installed and configured on Ubuntu OS.
-    # See: https://github.com/actions/runner-images/tree/main/images/ubuntu
     - name: Start MySQL
+      # MySQL server is already installed and configured on Ubuntu OS.
+      # See: https://github.com/actions/runner-images/tree/main/images/ubuntu
       run: |
         sudo systemctl start mysql.service
 
     - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      # Turn repeated input strings (such as the build output directory) into step outputs.
+      # These step outputs can be used throughout the workflow file.
       id: strings
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: >
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only
+      # required if you are using a single-configuration generator such as make.
+      run: > 
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
@@ -69,7 +69,9 @@ jobs:
 
     - name: Build & install
       # Build and install Mychem
-      run: make -C ${{ steps.strings.outputs.build-output-dir }} && sudo make install -C ${{ steps.strings.outputs.build-output-dir }}
+      run: |
+        make -C ${{ steps.strings.outputs.build-output-dir }}
+        sudo make install -C ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Load functions
       run: |
@@ -77,14 +79,17 @@ jobs:
         sudo systemctl restart mysql.service
 
     - name: Update apparmor configuration
+      # Configure apparmor to permit MySQL to use OpenBabel data
       run: |
         sudo sh -c "echo '/usr/share/openbabel/** r,' > /etc/apparmor.d/local/usr.sbin.mysqld"
         sudo sh -c "cat /etc/apparmor.d/usr.sbin.mysqld  | apparmor_parser -r"
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      # Execute tests defined by the CMake configuration. Note that
+      # --build-config is needed because the default Windows generator
+      # is a multi-config generator (Visual Studio generator).
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for
+      # more detail
       run: |
-        sudo journalctl -n 100
         sudo ctest --build-config ${{ matrix.build_type }}
