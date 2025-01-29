@@ -49,5 +49,8 @@
 /* Mychem version */
 #define MYCHEM_VERSION "${MYCHEM_VERSION}"
 
+/* OpenBabel lib version */
+#define OB_LIBRARY_FILE "${OPENBABEL_LIBRARY_FILE}"
+
 #endif /* __MYCHEM_CONFIG_H */
 
