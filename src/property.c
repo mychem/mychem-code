@@ -30,7 +30,6 @@
 #include "property.h"
 #include "property_wrapper.h"
 #include <mychem/config.h>
-#include <stdbool.h>
 
 #ifdef HAVE_DLOPEN
 
