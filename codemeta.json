@@ -64,6 +64,17 @@
                 "@type": "Organization",
                 "name": "University of Freiburg"
             }
+        },
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0002-7731-6236",
+            "givenName": "Andrius",
+            "familyName": "Merkys",
+            "email": "andrius.merkys@gmail.com",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Vilnius University"
+            }
         }
     ]
 }
