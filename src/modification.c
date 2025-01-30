@@ -29,6 +29,7 @@
 #include "modification.h"
 #include "modification_wrapper.h"
 #include <mychem/config.h>
+#include <stdbool.h>
 
 #ifdef HAVE_DLOPEN
 

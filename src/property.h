@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <mysql.h>
+#include <stdbool.h>
 #include <ctype.h>
 
 #ifdef HAVE_DLOPEN

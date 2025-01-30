@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <mysql.h>
+#include <stdbool.h>
 #include <ctype.h>
 
 /* static pthread_mutex_t obmtx; */

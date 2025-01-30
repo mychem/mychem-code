@@ -30,6 +30,7 @@
 #include "molmatch_wrapper.h"
 #include <mychem/config.h>
 #include <mychem/structures.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 
