@@ -3,26 +3,29 @@ The Mychem Project
 
 Mychem is a chemoinformatics extension for MySQL. This extension
 provides a set of functions that handles chemical data within the MySQL
-(or MariaDB) database. Mychem is based on `Open Babel <http://openbabel.org/wiki/Main_Page>`_.
+(or MariaDB) database. Mychem is based on `Open Babel <https://openbabel.org/>`_.
 As Open Babel is a high-quality software in chemoinformatics, Mychem
 provides reliable and fast functions. These functions permit you to
 search, analyze and convert chemical data.
 
-More information are available from the `Mychem Website <http://mychem.github.io>`_.
+More information are available from the `Mychem Website <https://mychem.github.io>`_.
+
 
 Documentation
 -------------
 
-A complete and detailed documentation is available `online <http://mychem.github.io/docs/index.html>`_.
+A complete and detailed documentation is available `online <https://mychem.github.io/docs/index.html>`_.
 A `pdf version <https://mychem.github.io/mychem-latest.pdf>`_ can also be
 downloaded.
+
 
 Installation
 ------------
 
 See the `INSTALL.rst <https://github.com/mychem/mychem-code/blob/master/INSTALL.rst>`_
 file for the installation instructions on GNU/Linux. Instructions for
-Mac OS X and Windows are given on the dedicated `documentation page <https://mychem.github.io/docs/installation.html>`_ .
+Mac OS X and Windows are given on the dedicated
+`documentation page <https://mychem.github.io/docs/installation.html>`_ .
 
 
 License

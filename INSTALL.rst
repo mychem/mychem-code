@@ -7,9 +7,9 @@ Requirements
 
 The following are required to build Mychem:
 
-*  cmake v2.4.5 or higher
+*  cmake v3.10 or higher
 *  libmysqlclient-dev v5.0 or higher (or the MariaDB equivalent)
-*  openbabel-dev v2.3.0 or higher
+*  openbabel-dev v3.0 or higher
 
 
 Quick Install
@@ -17,13 +17,15 @@ Quick Install
 
 This section describes a simple way to compile and install Mychem on
 GNU/Linux. For a more complete documentation about the installation
-procedure (in particular on Windows and Mac OS X), see the
+procedure (in particular on Mac OS X), see the
 `online documentation <https://mychem.github.io/docs/installation.html>`_.
+
 
 Get the last stable release
 +++++++++++++++++++++++++++
 
-The last stable release can be downloaded from the `Mychem GitHub release page <//github.com/mychem/mychem-code/releases/download/v1.0.1/mychem-1.0.1.tgz>`_.
+The last stable release can be downloaded from the
+`Mychem GitHub release page <https://github.com/mychem/mychem-code/releases/>`_.
 
 Uncompress the code
 +++++++++++++++++++
@@ -33,7 +35,8 @@ code with:
 
 ::
 
-   $ tar xfzv mychem-1.0.1.tgz
+   $ tar xfzv mychem-2.0.0.tgz
+
 
 Compilation and Installation
 ++++++++++++++++++++++++++++
@@ -46,7 +49,7 @@ this short tutorial:
 
 ::
 
-   $ cd mychem-1.0.1
+   $ cd mychem-2.0.0
    $ mkdir build
    $ cd build
    $ cmake ..
@@ -59,4 +62,18 @@ It is done with the following command:
 ::
 
    $ mysql -u user -p < src/mysqldb.sql
+
+On Ubuntu, the following additional steps are required:
+
+1. Add the following line to the ``/etc/apparmor.d/local/usr.sbin.mysqld``
+
+   ::
+
+      /usr/lib/openbabel/** r,
+
+2. Reload the AppArmor configuration:
+
+   ::
+
+      $ cat /etc/apparmor.d/usr.sbin.mysqld | apparmor_parser -r
 
