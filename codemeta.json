@@ -10,7 +10,7 @@
     "issueTracker": "https://github.com/mychem/mychem-code/issues",
     "name": "Mychem",
     "version": "2.0.0",
-    "identifier": "https://doi.org/10.5281/zenodo.4557895",
+    "identifier": "https://zenodo.org/records/14786457",
     "description": "Mychem is a chemoinformatics extension for MySQL and MariaDB. It provides a set of functions that permits to handle chemical data within the database. These functions permit to search, analyze and convert chemical data.",
     "applicationCategory": "Chemistry",
     "programmingLanguage": [
