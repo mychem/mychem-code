@@ -53,6 +53,8 @@ using namespace OpenBabel;
 char *conversion(const char *molecule, const char *inType, const char *outType)
 {
   string instring(molecule);
+  // aarch64: unsigned char breaks EOF detection in OpenBabel's GetInChI()
+  instring += '\n';
   string outstring;
   istringstream inStream(instring);
   ostringstream outStream;
@@ -75,7 +77,11 @@ char *conversion(const char *molecule, const char *inType, const char *outType)
     }
 
     try {
-      conv.Convert();
+      // Use Read/Write for a single molecule instead of Convert() which
+      // loops for more input and hangs on aarch64 due to EOF detection bug
+      OBMol mol;
+      if (conv.Read(&mol))
+        conv.Write(&mol);
 
       outstring = outStream.str();
 
